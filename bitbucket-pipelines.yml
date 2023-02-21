@@ -7,3 +7,9 @@ pipelines:
           - /usr/local/bin/all-checks.sh
           - ./ci/lint-and-test.sh
           - ./ci/publish-jar.sh
+        services:
+          - docker
+definitions:
+  services:
+    docker:
+      memory: 3072
