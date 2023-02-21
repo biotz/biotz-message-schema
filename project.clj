@@ -1,0 +1,33 @@
+(defproject biotz-message-schema "0.1.0-SNAPSHOT"
+  :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
+  :dependencies [[org.clojure/clojure "1.11.0"]
+                 [metosin/malli "0.9.2"]]
+  :plugins [[s3-wagon-private "1.3.5"]]
+  :repositories
+  [["magnet-s3-repo" {:url "s3p://mvn-private-repository/releases/" :no-auth true}]]
+  :test-paths ["test"]
+  :profiles {:dev [:project/dev :profiles/dev]
+             :repl {:prep-tasks ^:replace ["javac" "compile"]
+                    :dependencies [[cider/piggieback "0.5.3"]]
+                    :repl-options {:init-ns user
+                                   :nrepl-middleware [cider.piggieback/wrap-cljs-repl]
+                                   :host "0.0.0.0"
+                                   :port 4001}}
+             :profiles/dev {}
+             :project/dev {:eastwood {:linters [:all]
+                                      :exclude-linters [:keyword-typos
+                                                        :boxed-math
+                                                        :non-clojure-file
+                                                        :performance
+                                                        :unused-namespaces
+                                                        :unused-locals]
+                                      :debug [:progress :time]}
+                           :resource-paths ["dev/resources"]
+                           :source-paths ["dev/src"]
+                           :plugins [[jonase/eastwood "1.3.0"]
+                                     [lein-cljfmt "0.8.0"]]}}
+  :test-selectors {:default (fn [m] (not (or (:integration m) (:regression m))))
+                   :all (constantly true)
+                   :integration :integration
+                   :regression :regression}
+  :repl-options {:init-ns biotz-message-schema.core})

@@ -1,0 +1,8 @@
+image: magnetcoop/bob:2e3b8bc
+
+pipelines:
+  default:
+    - step:
+        script:
+          - /usr/local/bin/all-checks.sh
+          - ./ci/lint-and-test.sh
