@@ -10,7 +10,6 @@ docker build -t "${IMAGE_TAG}" .
 docker run --rm --detach \
     --name "biotz-message-schema" \
     --volume "${PWD}:/app" \
-    --entrypoint "/bin/bash" \
     "${IMAGE_TAG}" \
     tail -f /dev/null
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #shellcheck disable=SC1010
 
-set -eu -o pipefail
+set -e -o pipefail
 
 # Skip building if no tag
 if [[ -z "${BITBUCKET_TAG}" ]]; then
