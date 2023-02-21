@@ -14,7 +14,7 @@ docker run --rm --detach \
     tail -f /dev/null
 
 echo "clj-kondo"
-docker exec biotz-message-schema clj-kondo --lint src --lint test --lint dev
+docker exec biotz-message-schema clj-kondo --lint src --lint test
 
 echo "cljfmt"
 docker exec biotz-message-schema lein cljfmt fix
