@@ -3,6 +3,10 @@
 
 set -eu -o pipefail
 
+IMAGE_TAG=local/biotz-message-schema/ci:latest
+
+docker build -t "${IMAGE_TAG}" .
+
 docker run --rm --detach \
     --name "biotz-message-schema" \
     --volume "${PWD}:/app" \
