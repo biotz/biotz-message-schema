@@ -3,11 +3,21 @@
 
 set -eu -o pipefail
 
+docker run --rm --detach \
+    --name "biotz-message-schema" \
+    --volume "${PWD}:/app" \
+    --entrypoint "/bin/bash" \
+    "${IMAGE_TAG}" \
+    tail -f /dev/null
+
+echo "clj-kondo"
+docker exec biotz-message-schema clj-kondo --lint src --lint test --lint dev
+
 echo "cljfmt"
-lein cljfmt fix
+docker exec biotz-message-schema lein cljfmt fix
 
 echo "eastwood"
-lein eastwood
+docker exec biotz-message-schema lein eastwood
 
-echo "test"
-lein test :all
+echo "tests"
+docker exec biotz-message-schema lein test :all
