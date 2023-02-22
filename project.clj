@@ -3,7 +3,7 @@
   :dependencies [[org.clojure/clojure "1.11.0"]
                  [metosin/malli "0.9.2"]]
   :plugins [[s3-wagon-private "1.3.5"]]
-  :repositories
+  :deploy-repositories
   [["magnet-s3-repo" {:url "s3p://mvn-private-repository/releases/"
                       :no-auth true
                       :sign-releases false}]]
