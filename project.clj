@@ -4,7 +4,9 @@
                  [metosin/malli "0.9.2"]]
   :plugins [[s3-wagon-private "1.3.5"]]
   :repositories
-  [["magnet-s3-repo" {:url "s3p://mvn-private-repository/releases/" :no-auth true}]]
+  [["magnet-s3-repo" {:url "s3p://mvn-private-repository/releases/"
+                      :no-auth true
+                      :sign-releases false}]]
   :test-paths ["test"]
   :profiles {:dev [:project/dev :profiles/dev]
              :repl {:prep-tasks ^:replace ["javac" "compile"]
