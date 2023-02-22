@@ -109,6 +109,9 @@
          {:registry registry}
          (mt/transformer
           {:name :biotz-payload-transformer
+           ;; FIXME: once Malli releases a new version with our PR
+           ;; applied, please change the decoders to use our own
+           ;; types.
            :decoders {:map {:compile transformer/object-transformer}
                       :tuple {:compile transformer/coll-of-unrelated-items-transformer}
                       :set {:compile transformer/message-transformer}}}))]
