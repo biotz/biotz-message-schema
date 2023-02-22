@@ -13,4 +13,4 @@ docker run --rm --detach \
     "${IMAGE_TAG}" \
     tail -f /dev/null
 
-docker exec biotz-message-schema lein deploy
+docker exec biotz-message-schema lein deploy magnet-s3-repo
