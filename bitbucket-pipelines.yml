@@ -13,6 +13,8 @@ pipelines:
       - step:
           script:
             - ./ci/publish-jar.sh
+          services:
+            - docker
 definitions:
   services:
     docker:
