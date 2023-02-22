@@ -8,6 +8,9 @@ IMAGE_TAG=local/biotz-message-schema/ci:latest
 docker build -t "${IMAGE_TAG}" .
 
 docker run --rm --detach \
+    --env "AWS_ACCESS_KEY_ID" \
+    --env "AWS_SECRET_ACCESS_KEY" \
+    --env "AWS_DEFAULT_REGION" \
     --name "biotz-message-schema" \
     --volume "${PWD}:/app" \
     "${IMAGE_TAG}" \

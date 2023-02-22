@@ -12,6 +12,8 @@ pipelines:
     '*.*.*':
       - step:
           script:
+            - ./usr/local/bin/all-checks.sh
+            - ./ci/lint-and-test.sh
             - ./ci/publish-jar.sh
           services:
             - docker
