@@ -6,9 +6,13 @@ pipelines:
         script:
           - /usr/local/bin/all-checks.sh
           - ./ci/lint-and-test.sh
-          - ./ci/publish-jar.sh
         services:
           - docker
+  tags:
+    '*.*.*':
+      - step:
+          script:
+            - ./ci/publish-jar.sh
 definitions:
   services:
     docker:
