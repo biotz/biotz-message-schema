@@ -4,6 +4,12 @@ set -eu -o pipefail
 
 IMAGE_TAG=local/biotz-message-schema/dev:latest
 
+CONTAINER="$(docker ps --all --quiet --filter "name=biotz-message-schema")"
+
+if [[ -n "${CONTAINER}" ]]; then
+    docker kill "${CONTAINER}"
+fi
+
 docker build -t "${IMAGE_TAG}" .
 
 docker run --rm --detach \
