@@ -9,6 +9,7 @@ file. This change log follows the conventions of
 - Remove unnecessary piggieback dependency and repl-middleware.
 - Add io.biotz.message-schema.edn namespace to read and write biotz
   message-schemas from/to edn/string.
+- Add `unix-timestamp` and `rfc-3339-timestamp` schema types.
 
 ## [0.1.0] - 2023-02-22
 

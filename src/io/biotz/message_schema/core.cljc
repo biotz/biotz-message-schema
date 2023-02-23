@@ -7,12 +7,27 @@
             [malli.core :as m]
             [malli.transform :as mt]))
 
+(defn -unix-timestamp-schema
+  []
+  (m/-simple-schema
+   {:type :unix-timestamp
+    ;; TODO: better predicate
+    :pred int?}))
+
+(defn -rfc-3339-timestamp-schema
+  []
+  (m/-simple-schema
+   {:type :rfc-3339-timestamp
+    ;; TODO: better predicate
+    :pred string?}))
+
 (def registry
   {;; Basic types
    :biotz.message-schema/decimal (m/-double-schema)
    :biotz.message-schema/integer (m/-int-schema)
    :biotz.message-schema/text (m/-string-schema)
-   :biotz.message-schema/timestamp (m/-int-schema)
+   :biotz.message-schema/unix-timestamp (-unix-timestamp-schema)
+   :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
    :biotz.message-schema/boolean (m/-boolean-schema)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema)
@@ -105,6 +120,15 @@
    #{message-data}
    {:registry registry}))
 
+(defn build-message-data-validator
+  [schema]
+  (let [validator
+        (m/validator
+         schema
+         {:registry registry})]
+    (fn [message-data]
+      (validator #{message-data}))))
+
 (defn build-message-data-transformer
   [schema]
   (let [decoder
@@ -118,6 +142,8 @@
            ;; types.
            :decoders {:map {:compile transformer/object-transformer}
                       :tuple {:compile transformer/coll-of-unrelated-items-transformer}
-                      :set {:compile transformer/message-transformer}}}))]
+                      :set {:compile transformer/message-transformer}
+                      :unix-timestamp {:compile transformer/unix-timestamp-transformer}
+                      :rfc-3339-timestamp {:compile transformer/rfc-3339-timestamp-transformer}}}))]
     (fn [message-data]
       (decoder #{message-data}))))

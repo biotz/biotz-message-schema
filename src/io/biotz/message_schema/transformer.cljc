@@ -3,7 +3,8 @@
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 (ns io.biotz.message-schema.transformer
-  (:require [clojure.set :as set]
+  (:require [cljc.java-time.instant :as jt.instant]
+            [clojure.set :as set]
             [malli.core :as m]
             [malli.util :as mu]))
 
@@ -117,3 +118,13 @@
            x
            :else
            [{(:record-name (m/properties (:schema child))) x}])))}))
+
+(defn unix-timestamp-transformer
+  [_ _]
+  (fn [x]
+    (jt.instant/of-epoch-milli x)))
+
+(defn rfc-3339-timestamp-transformer
+  [_ _]
+  (fn [x]
+    (jt.instant/parse x)))
