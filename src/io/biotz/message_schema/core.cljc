@@ -2,8 +2,8 @@
 ;; License, v. 2.0. If a copy of the MPL was not distributed with this
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-(ns biotz-message-schema.core
-  (:require [biotz-message-schema.transformer :as transformer]
+(ns io.biotz.message-schema.core
+  (:require [io.biotz.message-schema.transformer :as transformer]
             [malli.core :as m]
             [malli.transform :as mt]))
 

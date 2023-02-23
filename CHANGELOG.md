@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Change artifact name to use reverse domain artifact name.
+
 ## [0.1.0] - 2023-02-22
 
 - Initial stable version.
