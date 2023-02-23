@@ -1,4 +1,5 @@
 (ns io.biotz.message-schema.edn
+  (:refer-clojure :exclude [read-string])
   (:require [clojure.edn :as edn]))
 
 (defn write-string
