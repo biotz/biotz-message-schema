@@ -10,9 +10,7 @@
   :test-paths ["test"]
   :profiles {:dev [:project/dev :profiles/dev]
              :repl {:prep-tasks ^:replace ["javac" "compile"]
-                    :dependencies [[cider/piggieback "0.5.3"]]
                     :repl-options {:init-ns user
-                                   :nrepl-middleware [cider.piggieback/wrap-cljs-repl]
                                    :host "0.0.0.0"
                                    :port 4001}}
              :profiles/dev {}
