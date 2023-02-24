@@ -119,10 +119,17 @@
            :else
            [{(:record-name (m/properties (:schema child))) x}])))}))
 
-(defn unix-timestamp-transformer
+(defn unix-timestamp-int-transformer
   [_ _]
   (fn [x]
     (jt.instant/of-epoch-milli x)))
+
+(defn unix-timestamp-str-transformer
+  [_ _]
+  (fn [x]
+    (let [y #?(:clj (Long/parseUnsignedLong x)
+               :cljs (js/parseInt x))]
+      (jt.instant/of-epoch-milli y))))
 
 (defn rfc-3339-timestamp-transformer
   [_ _]

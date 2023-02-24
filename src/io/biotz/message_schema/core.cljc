@@ -3,30 +3,45 @@
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 (ns io.biotz.message-schema.core
-  (:require [io.biotz.message-schema.transformer :as transformer]
+  (:require [clojure.edn :as edn]
+            [io.biotz.message-schema.transformer :as transformer]
             [malli.core :as m]
             [malli.transform :as mt]))
 
-(defn -unix-timestamp-schema
+(def ^:private rfc-3339-regex
+  #"((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?)))Z")
+
+(def ^:private max-long-digits-regex
+  #"\d{1,20}")
+
+(defn -unix-timestamp-int-schema
   []
   (m/-simple-schema
-   {:type :unix-timestamp
-    ;; TODO: better predicate
+   {:type :unix-timestamp-int
     :pred int?}))
+
+(defn -unix-timestamp-str-schema
+  []
+  (m/-simple-schema
+   {:type :unix-timestamp-str
+    :pred #(and (string? %)
+                (re-matches max-long-digits-regex %)
+                (int? (edn/read-string %)))}))
 
 (defn -rfc-3339-timestamp-schema
   []
   (m/-simple-schema
    {:type :rfc-3339-timestamp
-    ;; TODO: better predicate
-    :pred string?}))
+    :pred #(and (string? %)
+                (re-matches rfc-3339-regex %))}))
 
 (def registry
   {;; Basic types
    :biotz.message-schema/decimal (m/-double-schema)
    :biotz.message-schema/integer (m/-int-schema)
    :biotz.message-schema/text (m/-string-schema)
-   :biotz.message-schema/unix-timestamp (-unix-timestamp-schema)
+   :biotz.message-schema/unix-timestamp-int (-unix-timestamp-int-schema)
+   :biotz.message-schema/unix-timestamp-str (-unix-timestamp-str-schema)
    :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
    :biotz.message-schema/boolean (m/-boolean-schema)
    ;; Collections
@@ -143,7 +158,8 @@
            :decoders {:map {:compile transformer/object-transformer}
                       :tuple {:compile transformer/coll-of-unrelated-items-transformer}
                       :set {:compile transformer/message-transformer}
-                      :unix-timestamp {:compile transformer/unix-timestamp-transformer}
+                      :unix-timestamp-int {:compile transformer/unix-timestamp-int-transformer}
+                      :unix-timestamp-str {:compile transformer/unix-timestamp-str-transformer}
                       :rfc-3339-timestamp {:compile transformer/rfc-3339-timestamp-transformer}}}))]
     (fn [message-data]
       (decoder #{message-data}))))

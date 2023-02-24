@@ -9,12 +9,12 @@
 
 (def example-1
   {:message-data
-   {"timestamp" 1677161696842 "hum" 10.0 "temp" 20.0 "on" true}
+   {"timestamp" "1677161696842" "hum" 10.0 "temp" 20.0 "on" true}
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/object
      ["timestamp"
-      [:biotz.message-schema/unix-timestamp
+      [:biotz.message-schema/unix-timestamp-str
        {:record-timestamp true
         :record-name "timestamp"}]]
      ["hum"
@@ -49,7 +49,7 @@
       [:biotz.message-schema/coll-of-identical-items
        [:biotz.message-schema/object
         ["timestamp"
-         [:biotz.message-schema/unix-timestamp
+         [:biotz.message-schema/unix-timestamp-int
           {:record-timestamp true
            :record-name "timestamp"}]]
         ["humidity"
@@ -117,7 +117,7 @@
    [:biotz.message-schema/message
     [:biotz.message-schema/object
      ["timestamp"
-      [:biotz.message-schema/unix-timestamp
+      [:biotz.message-schema/unix-timestamp-int
        {:record-timestamp true
         :record-name "timestamp"}]]
      ["temperature"
@@ -150,7 +150,7 @@
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/coll-of-unrelated-items
-     [:biotz.message-schema/unix-timestamp
+     [:biotz.message-schema/unix-timestamp-int
       {:record-timestamp true
        :record-name "timestamp"}]
      [:biotz.message-schema/decimal
@@ -192,7 +192,7 @@
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/coll-of-unrelated-items
-     [:biotz.message-schema/unix-timestamp
+     [:biotz.message-schema/unix-timestamp-int
       {:record-timestamp true
        :record-name "timestamp"}]
      [:biotz.message-schema/coll-of-unrelated-items
@@ -225,7 +225,7 @@
     [:biotz.message-schema/coll-of-identical-items
      [:biotz.message-schema/object
       ["timestamp"
-       [:biotz.message-schema/unix-timestamp
+       [:biotz.message-schema/unix-timestamp-int
         {:record-timestamp true
          :record-name "timestamp"}]]
       ["humidity"
@@ -249,7 +249,7 @@
    [:biotz.message-schema/message
     [:biotz.message-schema/coll-of-identical-items
      [:biotz.message-schema/coll-of-unrelated-items
-      [:biotz.message-schema/unix-timestamp
+      [:biotz.message-schema/unix-timestamp-int
        {:record-timestamp true
         :record-name "timestamp"}]
       [:biotz.message-schema/decimal
