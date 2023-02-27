@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.1] - 2023-02-27
+
 - Change artifact name to use reverse domain artifact name.
 - Remove unnecessary piggieback dependency and repl-middleware.
 - Add io.biotz.message-schema.edn namespace to read and write biotz
