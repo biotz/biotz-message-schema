@@ -3,7 +3,8 @@
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 (ns io.biotz.message-schema.core
-  (:require [clojure.edn :as edn]
+  (:require [cljc.java-time.instant :as jt.instant]
+            [clojure.edn :as edn]
             [io.biotz.message-schema.transformer :as transformer]
             [malli.core :as m]
             [malli.transform :as mt]))
@@ -33,7 +34,10 @@
   (m/-simple-schema
    {:type :rfc-3339-timestamp
     :pred #(and (string? %)
-                (re-matches rfc-3339-regex %))}))
+                (re-matches rfc-3339-regex %)
+                (try
+                  (jt.instant/parse %)
+                  (catch Exception _ nil)))}))
 
 (def registry
   {;; Basic types
