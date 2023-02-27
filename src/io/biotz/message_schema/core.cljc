@@ -37,7 +37,7 @@
                 (re-matches rfc-3339-regex %)
                 (try
                   (jt.instant/parse %)
-                  (catch Exception _ nil)))}))
+                  (catch #?(:clj Throwable :cljs :default) _ nil)))}))
 
 (def registry
   {;; Basic types
