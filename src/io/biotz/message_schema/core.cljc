@@ -7,7 +7,8 @@
             [clojure.edn :as edn]
             [io.biotz.message-schema.transformer :as transformer]
             [malli.core :as m]
-            [malli.transform :as mt]))
+            [malli.transform :as mt]
+            [malli.util :as mu]))
 
 (def ^:private rfc-3339-regex
   #"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:(?:[0-5][0-9]|60)(?:\.\d{1,9})?Z")
@@ -147,6 +148,15 @@
          {:registry registry})]
     (fn [message-data]
       (validator #{message-data}))))
+
+(defn has-timestamp-record?
+  "Returns `true` if the given `schema` contains a `record-timestamp`
+  set to `true`."
+  [schema]
+  (mu/find-first schema
+                 (fn [s _ _]
+                   (-> s m/properties :record-timestamp))
+                 {:registry registry}))
 
 (defn build-message-data-transformer
   [schema]

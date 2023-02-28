@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Add `has-timestamp-record?` function.
+
 ## [0.1.1] - 2023-02-27
 
 - Change artifact name to use reverse domain artifact name.
