@@ -5,7 +5,14 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.2] - 2023-03-03
+
 - Add `has-timestamp-record?` function.
+- Update `curl` package version in Dockerfile
+- Add `criterium` benchmarking library for dev purposes
+- Redefine Malli simple-types as simple-schemas
+- Add functions to derive data model metadata from schemas
+- Ignore IntelliJ IDEA local files from .gitignore
 
 ## [0.1.1] - 2023-02-27
 
