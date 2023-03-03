@@ -25,6 +25,7 @@
                                       :debug [:progress :time]}
                            :resource-paths ["dev/resources"]
                            :source-paths ["dev/src"]
+                           :dependencies [[criterium "0.4.4"]]
                            :plugins [[jonase/eastwood "1.3.0"]
                                      [lein-cljfmt "0.8.0"]]}}
   :test-selectors {:default (fn [m] (not (or (:integration m) (:regression m))))
