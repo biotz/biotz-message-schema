@@ -208,3 +208,45 @@
                       :rfc-3339-timestamp {:compile transformer/rfc-3339-timestamp-transformer}}}))]
     (fn [message-data]
       (decoder #{message-data}))))
+
+(defn schema->data-model-metadata
+  [schema]
+  (reduce
+   (fn [data-model-metadata {:keys [schema]}]
+     (let [properties (m/properties schema)]
+       (cond-> data-model-metadata
+         (and (seq properties)
+              (not (some #(= (:record-name properties) (:name %)) data-model-metadata)))
+         (conj {:name (:record-name properties)
+                :type (m/type schema)}))))
+   []
+   (mu/subschemas schema {:registry registry})))
+
+(defn schemas->data-model-metadata
+  [schemas]
+  (let [xf (comp
+            (mapcat schema->data-model-metadata)
+            (distinct))]
+    (into [] xf schemas)))
+
+(defn calculate-new-data-model-metadata
+  [old-data-model-metadata new-data-model-metadata]
+  (reduce
+   (fn [acc {:keys [name type] :as new-col-metadata}]
+     (let [old-col-metadata (some #(when (= name (:name %)) %) old-data-model-metadata)]
+       (cond
+         (and old-col-metadata
+              (not= type (:type old-col-metadata)))
+         (throw
+          (ex-info "New column metadata entry breaks existing column metadata."
+                   {:new-col-metadata new-col-metadata
+                    :old-col-metadata old-col-metadata
+                    :error :type-change-is-forbidden}))
+         (not old-col-metadata)
+         (-> acc
+             (update :to-add conj new-col-metadata)
+             (update :new-data-model-metadata conj new-col-metadata))
+
+         :else (update acc :new-data-model-metadata conj old-col-metadata))))
+   {}
+   new-data-model-metadata))

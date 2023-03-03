@@ -32,7 +32,12 @@
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "humidity" 10.0
      "temperature" 20.0
-     "on" true}]})
+     "on" true}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-str}
+    {:name "humidity" :type :decimal}
+    {:name "temperature" :type :decimal}
+    {:name "on" :type :boolean}]})
 
 (def example-2
   {:message-data
@@ -66,7 +71,12 @@
     {"timestamp" (jt.instant/of-epoch-milli 1677161696844)
      "firmware_version" "1.0"
      "humidity" 5.0
-     "temperature" 10.0}]})
+     "temperature" 10.0}]
+   :data-model-metadata
+   [{:name "firmware_version" :type :text}
+    {:name "timestamp" :type :unix-timestamp-int}
+    {:name "humidity" :type :decimal}
+    {:name "temperature" :type :decimal}]})
 
 (def example-3
   {:message-data
@@ -106,7 +116,12 @@
    :data
    [{"timestamp" (jt.instant/parse "2023-02-23T15:42:27Z") "temperature" 10.0 "humidity" 10.0 "firmware_version" "1.0"}
     {"timestamp" (jt.instant/parse "2023-02-23T15:43:27Z") "temperature" 10.0 "firmware_version" "1.0"}
-    {"timestamp" (jt.instant/parse "2023-02-23T15:44:27Z") "humidity" 10.0 "firmware_version" "1.0"}]})
+    {"timestamp" (jt.instant/parse "2023-02-23T15:44:27Z") "humidity" 10.0 "firmware_version" "1.0"}]
+   :data-model-metadata
+   [{:name "firmware_version" :type :text}
+    {:name "timestamp" :type :rfc-3339-timestamp}
+    {:name "temperature" :type :decimal}
+    {:name "humidity" :type :decimal}]})
 
 (def example-4
   {:message-data
@@ -142,7 +157,13 @@
      "temperature_inner" 10.0
      "temperature_outer" 10.0
      "humidity_inner" 5.0
-     "humidity_outer" 5.0}]})
+     "humidity_outer" 5.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-int}
+    {:name "temperature_inner" :type :decimal}
+    {:name "temperature_outer" :type :decimal}
+    {:name "humidity_inner" :type :decimal}
+    {:name "humidity_outer" :type :decimal}]})
 
 (def example-5
   {:message-data
@@ -163,7 +184,12 @@
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "temperature" 10.0
      "humidity" 10.0
-     "on" true}]})
+     "on" true}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-int}
+    {:name "temperature" :type :decimal}
+    {:name "humidity" :type :decimal}
+    {:name "on" :type :boolean}]})
 
 (def example-6
   {:message-data
@@ -184,7 +210,11 @@
    :data
    [{"timestamp" (jt.instant/parse "2023-02-23T15:43:27Z")
      "temperature" 10.0
-     "humidity" 10.0}]})
+     "humidity" 10.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :rfc-3339-timestamp}
+    {:name "temperature" :type :decimal}
+    {:name "humidity" :type :decimal}]})
 
 (def example-7
   {:message-data
@@ -210,7 +240,13 @@
      "temperature_inner" 10.0
      "temperature_outer" 10.0
      "humidity_inner" 5.0
-     "humidity_outer" 5.0}]})
+     "humidity_outer" 5.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-int}
+    {:name "temperature_inner" :type :decimal}
+    {:name "temperature_outer" :type :decimal}
+    {:name "humidity_inner" :type :decimal}
+    {:name "humidity_outer" :type :decimal}]})
 
 (def example-8
   {:message-data
@@ -240,7 +276,11 @@
      "temperature" 5.0}
     {"timestamp" (jt.instant/of-epoch-milli 1677161696843)
      "humidity" 20.0
-     "temperature" 10.0}]})
+     "temperature" 10.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-int}
+    {:name "humidity" :type :decimal}
+    {:name "temperature" :type :decimal}]})
 
 (def example-9
   {:message-data
@@ -262,7 +302,11 @@
      "humidity" 10.0}
     {"timestamp" (jt.instant/of-epoch-milli 1677161696843)
      "temperature" 5.0
-     "humidity" 15.0}]})
+     "humidity" 15.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :unix-timestamp-int}
+    {:name "temperature" :type :decimal}
+    {:name "humidity" :type :decimal}]})
 
 (def example-10
   {:message-data 10.5
@@ -271,7 +315,9 @@
     [:biotz.message-schema/decimal
      {:record-name "temperature"}]]
    :data
-   [{"temperature" 10.5}]})
+   [{"temperature" 10.5}]
+   :data-model-metadata
+   [{:name "temperature" :type :decimal}]})
 
 (deftest test-custom-malli-schema-registry
   (are [m] (not (core/explain-message-data
@@ -303,3 +349,87 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10))
+
+(deftest test-data-model-metadata
+  (are [m] (= (:data-model-metadata m)
+              (core/schema->data-model-metadata (:malli-schema m)))
+    example-1 example-2
+    example-3 example-4
+    example-5 example-6
+    example-7 example-8
+    example-9 example-10))
+
+(deftest calculate-new-data-model-metadata-test
+  (let [old-schema [:biotz.message-schema/message
+                    [:biotz.message-schema/object
+                     ["timestamp"
+                      [:biotz.message-schema/unix-timestamp-int
+                       {:record-timestamp true
+                        :record-name "timestamp"}]]
+                     ["temp"
+                      [:biotz.message-schema/decimal
+                       {:record-name "temperature"}]]]]
+        old-data-model-metadata (core/schema->data-model-metadata old-schema)]
+    (testing "Calculates new changes successfully"
+      (let [new-schema [:biotz.message-schema/message
+                        [:biotz.message-schema/object
+                         ["timestamp"
+                          [:biotz.message-schema/unix-timestamp-int
+                           {:record-timestamp true
+                            :record-name "timestamp"}]]
+                         ["temp"
+                          [:biotz.message-schema/decimal
+                           {:record-name "temperature"}]]
+                         ["hum"
+                          [:biotz.message-schema/decimal
+                           {:record-name "humidity"}]]]]
+            new-data-model-metadata (core/schema->data-model-metadata new-schema)
+            result (core/calculate-new-data-model-metadata old-data-model-metadata
+                                                           new-data-model-metadata)]
+        (is (contains? result :to-add))
+        (is (contains? result :new-data-model-metadata))
+        (is (= 1 (count (:to-add result))))))
+    (testing "Type change of existing column meta is forbidden"
+      (let [new-schema [:biotz.message-schema/message
+                        [:biotz.message-schema/object
+                         ["timestamp"
+                          [:biotz.message-schema/unix-timestamp-int
+                           {:record-timestamp true
+                            :record-name "timestamp"}]]
+                         ["temp"
+                          [:biotz.message-schema/integer
+                           {:record-name "temperature"}]]]]
+            new-data-model-metadata (core/schema->data-model-metadata new-schema)
+            result (try
+                     (core/calculate-new-data-model-metadata old-data-model-metadata
+                                                             new-data-model-metadata)
+                     (catch Throwable t
+                       {:message (ex-message t)
+                        :data (ex-data t)}))]
+        (is (= "New column metadata entry breaks existing column metadata."
+               (:message result)))
+        (is (= :type-change-is-forbidden (get-in result [:data :error])))))
+    (testing "Schema field name change results in adding a new column in data model metadata."
+      (let [new-schema [:biotz.message-schema/message
+                        [:biotz.message-schema/object
+                         ["timestamp"
+                          [:biotz.message-schema/unix-timestamp-int
+                           {:record-timestamp true
+                            :record-name "timestamp"}]]
+                         ["temp2"
+                          [:biotz.message-schema/integer
+                           {:record-name "temperature2"}]]]]
+            new-data-model-metadata (core/schema->data-model-metadata new-schema)
+            result (core/calculate-new-data-model-metadata old-data-model-metadata
+                                                           new-data-model-metadata)]
+        (is (contains? result :to-add))
+        (is (contains? result :new-data-model-metadata))
+        (is (= 1 (count (:to-add result))))
+        (is (= "temperature2" (-> result :to-add first :name)))
+        (is (= :integer (-> result :to-add first :type)))))
+    (testing "Passing the same data model metadata gives the same result."
+      (let [new-data-model-metadata (core/schema->data-model-metadata old-schema)
+            result (core/calculate-new-data-model-metadata old-data-model-metadata
+                                                           new-data-model-metadata)]
+        (is (not (contains? result :to-add)))
+        (is (contains? result :new-data-model-metadata))))))
