@@ -20,12 +20,14 @@
   []
   (m/-simple-schema
    {:type :unix-timestamp-int
+    :type-properties {:biotz-type :unix-timestamp-int}
     :pred int?}))
 
 (defn -unix-timestamp-str-schema
   []
   (m/-simple-schema
    {:type :unix-timestamp-str
+    :type-properties {:biotz-type :unix-timestamp-str}
     :pred #(and (string? %)
                 (re-matches max-long-digits-regex %)
                 (int? (edn/read-string %)))}))
@@ -34,21 +36,50 @@
   []
   (m/-simple-schema
    {:type :rfc-3339-timestamp
+    :type-properties {:biotz-type :rfc-3339-timestamp}
     :pred #(and (string? %)
                 (re-matches rfc-3339-regex %)
                 (try
                   (jt.instant/parse %)
                   (catch #?(:clj Throwable :cljs :default) _ nil)))}))
 
+(defn -decimal-schema
+  []
+  (m/-simple-schema
+   {:type :decimal
+    :type-properties {:biotz-type :decimal}
+    :pred double?}))
+
+(defn -integer-schema
+  []
+  (m/-simple-schema
+   {:type :integer
+    :type-properties {:biotz-type :integer}
+    :pred int?}))
+
+(defn -text-schema
+  []
+  (m/-simple-schema
+   {:type :text
+    :type-properties {:biotz-type :text}
+    :pred string?}))
+
+(defn -boolean-schema
+  []
+  (m/-simple-schema
+   {:type :boolean
+    :type-properties {:biotz-type :boolean}
+    :pred boolean?}))
+
 (def registry
   {;; Basic types
-   :biotz.message-schema/decimal (m/-double-schema)
-   :biotz.message-schema/integer (m/-int-schema)
-   :biotz.message-schema/text (m/-string-schema)
+   :biotz.message-schema/decimal (-decimal-schema)
+   :biotz.message-schema/integer (-integer-schema)
+   :biotz.message-schema/text (-text-schema)
    :biotz.message-schema/unix-timestamp-int (-unix-timestamp-int-schema)
    :biotz.message-schema/unix-timestamp-str (-unix-timestamp-str-schema)
    :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
-   :biotz.message-schema/boolean (m/-boolean-schema)
+   :biotz.message-schema/boolean (-boolean-schema)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema)
    :biotz.message-schema/coll-of-identical-items (m/-collection-schema
