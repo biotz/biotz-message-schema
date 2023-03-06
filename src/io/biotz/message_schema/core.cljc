@@ -20,14 +20,16 @@
   []
   (m/-simple-schema
    {:type :unix-timestamp-int
-    :type-properties {:biotz-type :unix-timestamp-int}
+    :type-properties {:biotz-type :unix-timestamp-int
+                      :decode/biotz-payload-transformer transformer/unix-timestamp-int-decoder}
     :pred int?}))
 
 (defn -unix-timestamp-str-schema
   []
   (m/-simple-schema
    {:type :unix-timestamp-str
-    :type-properties {:biotz-type :unix-timestamp-str}
+    :type-properties {:biotz-type :unix-timestamp-str
+                      :decode/biotz-payload-transformer transformer/unix-timestamp-str-decoder}
     :pred #(and (string? %)
                 (re-matches max-long-digits-regex %)
                 (int? (edn/read-string %)))}))
@@ -36,7 +38,8 @@
   []
   (m/-simple-schema
    {:type :rfc-3339-timestamp
-    :type-properties {:biotz-type :rfc-3339-timestamp}
+    :type-properties {:biotz-type :rfc-3339-timestamp
+                      :decode/biotz-payload-transformer transformer/rfc-3339-timestamp-decoder}
     :pred #(and (string? %)
                 (re-matches rfc-3339-regex %)
                 (try
@@ -81,19 +84,24 @@
    :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
    :biotz.message-schema/boolean (-boolean-schema)
    ;; Collections
-   :biotz.message-schema/object (m/-map-schema)
+   :biotz.message-schema/object (m/-map-schema
+                                 {:type-properties
+                                  {:decode/biotz-payload-transformer transformer/object-decoder}})
    :biotz.message-schema/coll-of-identical-items (m/-collection-schema
                                                   {:type :vector
                                                    :pred vector?
                                                    :empty []})
-   :biotz.message-schema/coll-of-unrelated-items (m/-tuple-schema)
+   :biotz.message-schema/coll-of-unrelated-items (m/-tuple-schema
+                                                  {:type-properties
+                                                   {:decode/biotz-payload-transformer transformer/coll-of-unrelated-items-decoder}})
    ;; Other
    :biotz.message-schema/nilable (m/-maybe-schema)
    :biotz.message-schema/message (m/-collection-schema
                                   {:type :set
                                    :pred set?
                                    :empty #{}
-                                   :in (fn [_ x] x)})})
+                                   :in (fn [_ x] x)
+                                   :type-properties {:decode/biotz-payload-transformer transformer/message-decoder}})})
 
 (def meta-schema
   (m/schema
@@ -196,16 +204,7 @@
          schema
          {:registry registry}
          (mt/transformer
-          {:name :biotz-payload-transformer
-           ;; FIXME: once Malli releases a new version with our PR
-           ;; applied, please change the decoders to use our own
-           ;; types.
-           :decoders {:map {:compile transformer/object-transformer}
-                      :tuple {:compile transformer/coll-of-unrelated-items-transformer}
-                      :set {:compile transformer/message-transformer}
-                      :unix-timestamp-int {:compile transformer/unix-timestamp-int-transformer}
-                      :unix-timestamp-str {:compile transformer/unix-timestamp-str-transformer}
-                      :rfc-3339-timestamp {:compile transformer/rfc-3339-timestamp-transformer}}}))]
+          {:name :biotz-payload-transformer}))]
     (fn [message-data]
       (decoder #{message-data}))))
 

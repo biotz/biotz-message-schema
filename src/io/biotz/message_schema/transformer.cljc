@@ -68,70 +68,68 @@
   [m ks]
   (let [common (apply dissoc m ks)
         colls (apply concat (vals (select-keys m ks)))]
-    (map (partial merge common) colls)))
+    (mapv (partial merge common) colls)))
 
-(defn object-transformer
-  [schema _]
-  (let [children (get-children schema)
-        rename-kmap (build-object-rename-kmap schema children)
-        merge-types (build-object-merge-types children)]
-    ;;TODO Use transducers
-    {:leave
-     (fn [x]
-       (cond-> x
-         (seq rename-kmap)
-         (set/rename-keys rename-kmap)
+(def object-decoder
+  {:compile
+   (fn [schema _]
+     (let [children (get-children schema)
+           rename-kmap (build-object-rename-kmap schema children)
+           merge-types (build-object-merge-types children)]
+       ;;TODO Use transducers
+       {:leave
+        (fn [x]
+          (cond-> x
+            (seq rename-kmap)
+            (set/rename-keys rename-kmap)
 
-         (:object merge-types)
-         (map-merge-submaps (:object merge-types))
+            (:object merge-types)
+            (map-merge-submaps (:object merge-types))
 
-         (:coll-of-identical-items merge-types)
-         (map-merge-colls (:coll-of-identical-items merge-types))))}))
+            (:coll-of-identical-items merge-types)
+            (map-merge-colls (:coll-of-identical-items merge-types))))}))})
 
-(defn coll-of-unrelated-items-transformer
-  [schema _]
-  (let [children (get-children schema)
-        children-record-names (find-record-names (map :schema children))]
-    ;;TODO Use transducers and into instead of merge
-    {:leave
-     (fn [x]
-       (->> x
-            (map
-             (fn [record-name v]
-               (if record-name
-                 {record-name v}
-                 v))
-             children-record-names)
-            (apply merge)))}))
+(def coll-of-unrelated-items-decoder
+  {:compile
+   (fn [schema _]
+     (let [children (get-children schema)
+           children-record-names (find-record-names (map :schema children))]
+       {:leave
+        (fn [x]
+          (->> x
+               (map
+                (fn [record-name v]
+                  (if record-name
+                    {record-name v}
+                    v))
+                children-record-names)
+               (into {})))}))})
 
-(defn message-transformer
-  [schema _]
-  (let [child (first (get-children schema))]
+(def message-decoder
+  {:compile
+   (fn [schema _]
+     (let [child (first (get-children schema))]
     ;;TODO refactor to perform operations based on schema
-    {:leave
-     (fn [x]
-       (let [x (first x)]
-         (cond
-           (map? x)
-           [x]
-           (sequential? x)
-           x
-           :else
-           [{(:record-name (m/properties (:schema child))) x}])))}))
+       {:leave
+        (fn [x]
+          (let [x (first x)]
+            (cond
+              (map? x)
+              [x]
+              (sequential? x)
+              x
+              :else
+              [{(:record-name (m/properties (:schema child))) x}])))}))})
 
-(defn unix-timestamp-int-transformer
-  [_ _]
-  (fn [x]
-    (jt.instant/of-epoch-milli x)))
+(def unix-timestamp-int-decoder
+  {:enter jt.instant/of-epoch-milli})
 
-(defn unix-timestamp-str-transformer
-  [_ _]
-  (fn [x]
-    (let [y #?(:clj (Long/parseUnsignedLong x)
-               :cljs (js/parseInt x))]
-      (jt.instant/of-epoch-milli y))))
+(def unix-timestamp-str-decoder
+  {:enter
+   (fn [x]
+     (let [y #?(:clj (Long/parseUnsignedLong x)
+                :cljs (js/parseInt x))]
+       (jt.instant/of-epoch-milli y)))})
 
-(defn rfc-3339-timestamp-transformer
-  [_ _]
-  (fn [x]
-    (jt.instant/parse x)))
+(def rfc-3339-timestamp-decoder
+  {:enter jt.instant/parse})
