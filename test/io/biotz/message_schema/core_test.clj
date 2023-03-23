@@ -34,7 +34,7 @@
      "temperature" 20.0
      "on" true}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-str}
+   [{:name "timestamp" :type :timestamp}
     {:name "humidity" :type :decimal}
     {:name "temperature" :type :decimal}
     {:name "on" :type :boolean}]})
@@ -74,7 +74,7 @@
      "temperature" 10.0}]
    :data-model-metadata
    [{:name "firmware_version" :type :text}
-    {:name "timestamp" :type :unix-timestamp-int}
+    {:name "timestamp" :type :timestamp}
     {:name "humidity" :type :decimal}
     {:name "temperature" :type :decimal}]})
 
@@ -119,7 +119,7 @@
     {"timestamp" (jt.instant/parse "2023-02-23T15:44:27Z") "humidity" 10.0 "firmware_version" "1.0"}]
    :data-model-metadata
    [{:name "firmware_version" :type :text}
-    {:name "timestamp" :type :rfc-3339-timestamp}
+    {:name "timestamp" :type :timestamp}
     {:name "temperature" :type :decimal}
     {:name "humidity" :type :decimal}]})
 
@@ -159,7 +159,7 @@
      "humidity_inner" 5.0
      "humidity_outer" 5.0}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-int}
+   [{:name "timestamp" :type :timestamp}
     {:name "temperature_inner" :type :decimal}
     {:name "temperature_outer" :type :decimal}
     {:name "humidity_inner" :type :decimal}
@@ -186,7 +186,7 @@
      "humidity" 10.0
      "on" true}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-int}
+   [{:name "timestamp" :type :timestamp}
     {:name "temperature" :type :decimal}
     {:name "humidity" :type :decimal}
     {:name "on" :type :boolean}]})
@@ -212,7 +212,7 @@
      "temperature" 10.0
      "humidity" 10.0}]
    :data-model-metadata
-   [{:name "timestamp" :type :rfc-3339-timestamp}
+   [{:name "timestamp" :type :timestamp}
     {:name "temperature" :type :decimal}
     {:name "humidity" :type :decimal}]})
 
@@ -242,7 +242,7 @@
      "humidity_inner" 5.0
      "humidity_outer" 5.0}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-int}
+   [{:name "timestamp" :type :timestamp}
     {:name "temperature_inner" :type :decimal}
     {:name "temperature_outer" :type :decimal}
     {:name "humidity_inner" :type :decimal}
@@ -278,7 +278,7 @@
      "humidity" 20.0
      "temperature" 10.0}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-int}
+   [{:name "timestamp" :type :timestamp}
     {:name "humidity" :type :decimal}
     {:name "temperature" :type :decimal}]})
 
@@ -304,7 +304,7 @@
      "temperature" 5.0
      "humidity" 15.0}]
    :data-model-metadata
-   [{:name "timestamp" :type :unix-timestamp-int}
+   [{:name "timestamp" :type :timestamp}
     {:name "temperature" :type :decimal}
     {:name "humidity" :type :decimal}]})
 
@@ -448,7 +448,7 @@
                                                            new-data-model-metadata)]
         (is (= [{:name "humidity" :type :integer}]
                (:to-add result)))
-        (is (= [{:name "timestamp" :type :unix-timestamp-int}
+        (is (= [{:name "timestamp" :type :timestamp}
                 {:name "temperature" :type :decimal}
                 {:name "humidity" :type :integer}]
                (:new-data-model-metadata result)))))))

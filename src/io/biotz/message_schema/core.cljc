@@ -21,6 +21,7 @@
   (m/-simple-schema
    {:type :unix-timestamp-int
     :type-properties {:biotz-type :unix-timestamp-int
+                      :biotz-metadata-type :timestamp
                       :decode/biotz-payload-transformer transformer/unix-timestamp-int-decoder}
     :pred int?}))
 
@@ -29,6 +30,7 @@
   (m/-simple-schema
    {:type :unix-timestamp-str
     :type-properties {:biotz-type :unix-timestamp-str
+                      :biotz-metadata-type :timestamp
                       :decode/biotz-payload-transformer transformer/unix-timestamp-str-decoder}
     :pred #(and (string? %)
                 (re-matches max-long-digits-regex %)
@@ -39,6 +41,7 @@
   (m/-simple-schema
    {:type :rfc-3339-timestamp
     :type-properties {:biotz-type :rfc-3339-timestamp
+                      :biotz-metadata-type :timestamp
                       :decode/biotz-payload-transformer transformer/rfc-3339-timestamp-decoder}
     :pred #(and (string? %)
                 (re-matches rfc-3339-regex %)
@@ -212,12 +215,14 @@
   [schema]
   (reduce
    (fn [data-model-metadata {:keys [schema]}]
-     (let [properties (m/properties schema)]
+     (let [properties (m/properties schema)
+           type-properties (m/type-properties schema)]
        (cond-> data-model-metadata
          (and (seq properties)
               (not (some #(= (:record-name properties) (:name %)) data-model-metadata)))
          (conj {:name (:record-name properties)
-                :type (m/type schema)}))))
+                :type (or (get type-properties :biotz-metadata-type)
+                          (get type-properties :biotz-type))}))))
    []
    (mu/subschemas schema {:registry registry})))
 
