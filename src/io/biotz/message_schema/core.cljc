@@ -246,6 +246,6 @@
              (update :to-add conj new-col-metadata)
              (update :new-data-model-metadata conj new-col-metadata))
 
-         :else (update acc :new-data-model-metadata conj old-col-metadata))))
-   {}
+         :else acc)))
+   {:new-data-model-metadata old-data-model-metadata}
    new-data-model-metadata))

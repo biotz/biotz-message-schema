@@ -432,4 +432,23 @@
             result (core/calculate-new-data-model-metadata old-data-model-metadata
                                                            new-data-model-metadata)]
         (is (not (contains? result :to-add)))
-        (is (contains? result :new-data-model-metadata))))))
+        (is (contains? result :new-data-model-metadata))))
+    (testing "Old metadata is kept even if new doesn't include it."
+      (let [new-schema [:biotz.message-schema/message
+                        [:biotz.message-schema/object
+                         ["timestamp"
+                          [:biotz.message-schema/unix-timestamp-int
+                           {:record-timestamp true
+                            :record-name "timestamp"}]]
+                         ["hum"
+                          [:biotz.message-schema/integer
+                           {:record-name "humidity"}]]]]
+            new-data-model-metadata (core/schema->data-model-metadata new-schema)
+            result (core/calculate-new-data-model-metadata old-data-model-metadata
+                                                           new-data-model-metadata)]
+        (is (= [{:name "humidity" :type :integer}]
+               (:to-add result)))
+        (is (= [{:name "timestamp" :type :unix-timestamp-int}
+                {:name "temperature" :type :decimal}
+                {:name "humidity" :type :integer}]
+               (:new-data-model-metadata result)))))))
