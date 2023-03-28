@@ -16,6 +16,19 @@
 (def ^:private max-long-digits-regex
   #"\d{1,20}")
 
+(def record-name-regex
+  #"^[a-z_][a-z0-9_]{0,63}$")
+
+(def record-name-schema
+  (m/schema
+   [:and
+    [:string {:min 1 :max 64}]
+    [:re record-name-regex]]))
+
+(def object-key-name-schema
+  (m/schema
+   [:string {:min 1}]))
+
 (defn -unix-timestamp-int-schema
   []
   (m/-simple-schema
@@ -114,9 +127,7 @@
                                {:optional true}
                                boolean?]
                               [:record-name
-                               [:and
-                                [:string {:min 1, :max 64}]
-                                [:re #"^[a-z_][a-z0-9_]+$"]]]
+                               record-name-schema]
                               [:record-timestamp
                                {:optional true}
                                boolean?]]
@@ -128,7 +139,7 @@
                                  [::m/default
                                   [:ref ::schema]]]
                 ::object-field [:cat
-                                [:string {:min 1}]
+                                object-key-name-schema
                                 [:+ [:and vector? [:ref ::nilable-field]]]]
                 ::schema [:multi {:dispatch first}
                           [:biotz.message-schema/object
