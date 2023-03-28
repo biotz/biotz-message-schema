@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.4] - 2023-03-28
+
+- Refactor record-name and object-key-name schemas.
+
 ## [0.1.3] - 2023-03-23
 
 - Fix old metadata being lost when calculating new one.
