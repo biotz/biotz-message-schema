@@ -5,6 +5,11 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.5] - 2023-05-23
+
+- Fix transformation failure when object names are duplicated 
+- Use closed object schemas for validation
+
 ## [0.1.4] - 2023-03-28
 
 - Refactor record-name and object-key-name schemas.
