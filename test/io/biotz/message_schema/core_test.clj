@@ -319,6 +319,70 @@
    :data-model-metadata
    [{:name "temperature" :type :decimal}]})
 
+(def example-11
+  {:message-data {"name1" {"name2" 2.0}
+                  "name2" {"name1" 1.0}
+                  "name3" 3.0}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/object
+       ["name2"
+        [:biotz.message-schema/decimal
+         {:record-name "name2"}]]]]
+     ["name2"
+      [:biotz.message-schema/object
+       ["name1"
+        [:biotz.message-schema/decimal
+         {:record-name "name1"}]]]]
+     ["name3"
+      [:biotz.message-schema/decimal
+       {:record-name "name3"}]]]]
+   :data
+   [{"name1" 1.0 "name2" 2.0 "name3" 3.0}]
+   :data-model-metadata
+   [{:name "name1" :type :decimal}
+    {:name "name2" :type :decimal}
+    {:name "name3" :type :decimal}]})
+
+(def example-12
+  {:message-data {"name1" [{"name2" 2.0}]
+                  "name2" [{"name1" 1.0}]
+                  "name3" 3.0
+                  "name4" {"name4" 4.0}}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/coll-of-identical-items
+       [:biotz.message-schema/object
+        ["name2"
+         [:biotz.message-schema/decimal
+          {:record-name "name2"}]]]]]
+     ["name2"
+      [:biotz.message-schema/coll-of-identical-items
+       [:biotz.message-schema/object
+        ["name1"
+         [:biotz.message-schema/decimal
+          {:record-name "name1"}]]]]]
+     ["name3"
+      [:biotz.message-schema/decimal
+       {:record-name "name3"}]]
+     ["name4"
+      [:biotz.message-schema/object
+       ["name4"
+        [:biotz.message-schema/decimal
+         {:record-name "name4"}]]]]]]
+   :data
+   [{"name1" 1.0 "name3" 3.0 "name4" 4.0}
+    {"name2" 2.0 "name3" 3.0 "name4" 4.0}]
+   :data-model-metadata
+   [{:name "name1" :type :decimal}
+    {:name "name2" :type :decimal}
+    {:name "name3" :type :decimal}
+    {:name "name4" :type :decimal}]})
+
 (deftest test-custom-malli-schema-registry
   (are [m] (not (core/explain-message-data
                  (:malli-schema m)
@@ -327,7 +391,8 @@
     example-3 example-4
     example-5 example-6
     example-7 example-8
-    example-9 example-10))
+    example-9 example-10
+    example-11 example-12))
 
 (deftest test-malli-meta-schema
   (are [m] (not (core/explain-message-schema
@@ -336,7 +401,8 @@
     example-3 example-4
     example-5 example-6
     example-7 example-8
-    example-9 example-10))
+    example-9 example-10
+    example-11 example-12))
 
 (deftest test-data-transformation
   (are [m] (= (:data m)
@@ -348,16 +414,20 @@
     example-4
     example-5 example-6
     example-7 example-8
-    example-9 example-10))
+    example-9 example-10
+    example-11 example-12))
 
 (deftest test-data-model-metadata
-  (are [m] (= (:data-model-metadata m)
-              (core/schema->data-model-metadata (:malli-schema m)))
+  (are [m] (= (->> (:data-model-metadata m)
+                   (sort-by :name))
+              (->> (core/schema->data-model-metadata (:malli-schema m))
+                   (sort-by :name)))
     example-1 example-2
     example-3 example-4
     example-5 example-6
     example-7 example-8
-    example-9 example-10))
+    example-9 example-10
+    example-11 example-12))
 
 (deftest calculate-new-data-model-metadata-test
   (let [old-schema [:biotz.message-schema/message

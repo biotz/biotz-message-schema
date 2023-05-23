@@ -42,52 +42,37 @@
      (let [merge-type (cond
                         (mu/find-first schema (fn [s _ _]
                                                 (= :vector (m/type s))))
-                        :coll-of-identical-items
+                        :coll-of-identical-item-ks
 
                         (mu/find-first schema (fn [s _ _]
                                                 (get #{:map :tuple} (m/type s))))
-                        :object
+                        :object-ks
 
                         :else
-                        :simple-type)]
-       (update merge-types merge-type conj (first path))))
+                        :simple-type-ks)
+           key (or (:record-name (m/properties schema))
+                   (first path))]
+       (update merge-types merge-type conj key)))
    {}
    children))
-
-(defn- map-merge-submaps
-  [m ks]
-  (reduce
-   (fn [m k]
-     (-> m
-         (dissoc k)
-         (merge (get m k))))
-   m
-   ks))
-
-(defn- map-merge-colls
-  [m ks]
-  (let [common (apply dissoc m ks)
-        colls (apply concat (vals (select-keys m ks)))]
-    (mapv (partial merge common) colls)))
 
 (def object-decoder
   {:compile
    (fn [schema _]
      (let [children (get-children schema)
            rename-kmap (build-object-rename-kmap schema children)
-           merge-types (build-object-merge-types children)]
-       ;;TODO Use transducers
+           {:keys [coll-of-identical-item-ks object-ks simple-type-ks]}
+           (build-object-merge-types children)]
        {:leave
         (fn [x]
-          (cond-> x
-            (seq rename-kmap)
-            (set/rename-keys rename-kmap)
-
-            (:object merge-types)
-            (map-merge-submaps (:object merge-types))
-
-            (:coll-of-identical-items merge-types)
-            (map-merge-colls (:coll-of-identical-items merge-types))))}))})
+          (let [renamed-map (set/rename-keys x rename-kmap)
+                simple-type-ks-map (select-keys renamed-map simple-type-ks)
+                object-ks-maps (keep renamed-map object-ks)]
+            (if-not (seq coll-of-identical-item-ks)
+              (into simple-type-ks-map object-ks-maps)
+              (->> (mapcat renamed-map coll-of-identical-item-ks)
+                   (mapv #(-> (into simple-type-ks-map %)
+                              (into object-ks-maps)))))))}))})
 
 (def coll-of-unrelated-items-decoder
   {:compile
