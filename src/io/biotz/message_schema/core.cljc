@@ -195,10 +195,10 @@
 
 (defn build-message-data-validator
   [schema]
-  (let [validator
-        (m/validator
-         schema
-         {:registry registry})]
+  (let [validator (-> schema
+                      (m/schema {:registry registry})
+                      (mu/closed-schema)
+                      (m/validator))]
     (fn [message-data]
       (validator #{message-data}))))
 

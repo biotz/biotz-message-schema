@@ -452,3 +452,14 @@
                 {:name "temperature" :type :decimal}
                 {:name "humidity" :type :integer}]
                (:new-data-model-metadata result)))))))
+
+(deftest schema-is-closed-test
+  (let [schema [:biotz.message-schema/message
+                [:biotz.message-schema/object
+                 ["temp"
+                  [:biotz.message-schema/decimal
+                   {:record-name "temperature"}]]]]
+        validator (core/build-message-data-validator schema)]
+    (testing "Schema objects are closed"
+      (is (validator {"temp" 1.0}))
+      (is (not (validator {"temp" 1.0 "hum" 2.0}))))))
