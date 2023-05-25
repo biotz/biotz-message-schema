@@ -123,6 +123,7 @@
   (m/schema
    [:schema
     {:registry {::properties [:map
+                              {:closed true}
                               [:record-name
                                record-name-schema]
                               [:record-timestamp
