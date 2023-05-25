@@ -5,6 +5,11 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.6] - 2023-05-25
+
+- Fix misplacement of optional property map.
+- Make meta-schema's `::properties` schema closed.
+
 ## [0.1.5] - 2023-05-23
 
 - Fix transformation failure when object names are duplicated 
