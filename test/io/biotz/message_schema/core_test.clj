@@ -24,10 +24,10 @@
       [:biotz.message-schema/decimal
        {:record-name "temperature"}]]
      ["on"
+      {:optional true}
       [:biotz.message-schema/nilable
        [:biotz.message-schema/boolean
-        {:optional true
-         :record-name "on"}]]]]]
+        {:record-name "on"}]]]]]
    :data
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "humidity" 10.0

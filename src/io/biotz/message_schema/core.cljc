@@ -123,9 +123,6 @@
   (m/schema
    [:schema
     {:registry {::properties [:map
-                              [:optional
-                               {:optional true}
-                               boolean?]
                               [:record-name
                                record-name-schema]
                               [:record-timestamp
@@ -140,6 +137,7 @@
                                   [:ref ::schema]]]
                 ::object-field [:cat
                                 object-key-name-schema
+                                [:? [:map [:optional {:optional true} boolean?]]]
                                 [:+ [:and vector? [:ref ::nilable-field]]]]
                 ::schema [:multi {:dispatch first}
                           [:biotz.message-schema/object
