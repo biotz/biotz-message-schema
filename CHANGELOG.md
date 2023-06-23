@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.7] - 2023-06-23
+
+- Allow integer values if schema is defined as decimal.
+
 ## [0.1.6] - 2023-05-25
 
 - Fix misplacement of optional property map.
@@ -12,7 +16,7 @@ file. This change log follows the conventions of
 
 ## [0.1.5] - 2023-05-23
 
-- Fix transformation failure when object names are duplicated 
+- Fix transformation failure when object names are duplicated
 - Use closed object schemas for validation
 
 ## [0.1.4] - 2023-03-28
