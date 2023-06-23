@@ -67,7 +67,7 @@
   (m/-simple-schema
    {:type :decimal
     :type-properties {:biotz-type :decimal}
-    :pred double?}))
+    :pred #(or (double? %) (int? %))}))
 
 (defn -integer-schema
   []
