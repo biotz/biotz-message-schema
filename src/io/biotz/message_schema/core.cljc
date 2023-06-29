@@ -119,7 +119,44 @@
                                    :in (fn [_ x] x)
                                    :type-properties {:decode/biotz-payload-transformer transformer/message-decoder}})})
 
-(def meta-schema
+(def action-msg-type-schema-meta-schema
+  (m/schema
+   [:schema
+    {:registry {::nilable-field [:multi {:dispatch first}
+                                 [:biotz.message-schema/nilable
+                                  [:tuple
+                                   any?
+                                   [:and vector? [:ref ::schema]]]]
+                                 [::m/default
+                                  [:ref ::schema]]]
+                ::object-field [:cat
+                                object-key-name-schema
+                                [:? [:map [:optional {:optional true} boolean?]]]
+                                [:+ [:and vector? [:ref ::nilable-field]]]]
+                ::schema [:multi {:dispatch first}
+                          [:biotz.message-schema/object
+                           [:cat
+                            any?
+                            [:+ [:and vector? [:ref ::object-field]]]]]
+                          [:biotz.message-schema/coll-of-identical-items
+                           [:tuple
+                            any?
+                            [:and vector? [:ref ::schema]]]]
+                          [:biotz.message-schema/coll-of-unrelated-items
+                           [:cat
+                            any?
+                            [:+ [:and vector? [:ref ::nilable-field]]]]]
+                          [::m/default
+                           [:tuple
+                            [:and
+                             qualified-keyword?
+                             (apply conj [:enum] (keys registry))]]]]}}
+
+    [:tuple
+     [:= :biotz.message-schema/message]
+     ::schema]]))
+
+(def msg-type-schema-meta-schema
   (m/schema
    [:schema
     {:registry {::properties [:map
@@ -165,14 +202,14 @@
      ::schema]]))
 
 (defn validate-message-schema
-  [schema]
+  [meta-schema schema]
   (m/validate
    meta-schema
    schema
    {:registry registry}))
 
 (defn explain-message-schema
-  [schema]
+  [meta-schema schema]
   (m/explain
    meta-schema
    schema

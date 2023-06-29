@@ -5,6 +5,7 @@
 (ns io.biotz.message-schema.core-test
   (:require [cljc.java-time.instant :as jt.instant]
             [clojure.test :refer :all]
+            [clojure.walk :as walk]
             [io.biotz.message-schema.core :as core]))
 
 (def example-1
@@ -383,6 +384,21 @@
     {:name "name3" :type :decimal}
     {:name "name4" :type :decimal}]})
 
+(defn- remove-leaf-nodes-properties
+  "Convinience function to reuse the examples 1-12 with
+  `action-msg-type-schema-meta-schema` tests. The difference with
+  `msg-type-schema-meta-schema` is that it doesn't contain a
+  properties map on the leaf nodes."
+  [schema]
+  (walk/postwalk
+   (fn [node]
+     (if (and (vector? node)
+              (map? (second node))
+              (contains? (second node) :record-name))
+       (vec (butlast node))
+       node))
+   schema))
+
 (deftest test-custom-malli-schema-registry
   (are [m] (not (core/explain-message-data
                  (:malli-schema m)
@@ -394,9 +410,21 @@
     example-9 example-10
     example-11 example-12))
 
-(deftest test-malli-meta-schema
+(deftest test-malli-msg-type-schema-meta-schema
   (are [m] (not (core/explain-message-schema
+                 core/msg-type-schema-meta-schema
                  (:malli-schema m)))
+    example-1 example-2
+    example-3 example-4
+    example-5 example-6
+    example-7 example-8
+    example-9 example-10
+    example-11 example-12))
+
+(deftest test-malli-action-msg-type-schema-meta-schema
+  (are [m] (not (core/explain-message-schema
+                 core/action-msg-type-schema-meta-schema
+                 (remove-leaf-nodes-properties (:malli-schema m))))
     example-1 example-2
     example-3 example-4
     example-5 example-6

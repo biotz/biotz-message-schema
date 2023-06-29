@@ -5,6 +5,9 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- BREAKING CHANGE: Split `meta-schema` into two different versions: `msg-type-schema-meta-schema` and `action-msg-type-schema-meta-schema`. The difference is that the former can have a property map on the leaf nodes (with `:record-name` and `:record-timestamp`. The latter don't have it.
+- BREAKING CHANGE: `validate-message-schema` and `explain-message-schema` now are functions of 2 arity. The first being the `meta-schema` (one of the explained above) and the second the `schema` to be validated.
+
 ## [0.1.7] - 2023-06-23
 
 - Allow integer values if schema is defined as decimal.
