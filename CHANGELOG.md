@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.9] - 2023-12-11
+
 - Add `base10-integer-as-string`, `base10-decimal-as-string`, and `base16-integer-as-string` schemas.
 
 ## [0.1.8] - 2023-06-29
