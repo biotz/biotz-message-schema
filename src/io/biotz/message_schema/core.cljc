@@ -90,6 +90,39 @@
     :type-properties {:biotz-type :boolean}
     :pred boolean?}))
 
+(defn -base10-integer-as-string
+  []
+  (m/-simple-schema
+   {:type :integer
+    :type-properties
+    {:biotz-type :base10-integer-as-string
+     :biotz-metadata-type :integer
+     :decode/biotz-payload-transformer transformer/base10-integer-as-string-decoder}
+    :pred #(and (string? %)
+                (re-matches #"[+-]?[0-9]+" %))}))
+
+(defn -base10-decimal-as-string
+  []
+  (m/-simple-schema
+   {:type :decimal
+    :type-properties
+    {:biotz-type :base10-decimal-as-string
+     :biotz-metadata-type :decimal
+     :decode/biotz-payload-transformer transformer/base10-decimal-as-string-decoder}
+    :pred #(and (string? %)
+                (re-matches #"[+-]?([0-9]*\.[0-9]+|[0-9]+)" %))}))
+
+(defn -base16-integer-as-string
+  []
+  (m/-simple-schema
+   {:type :integer
+    :type-properties
+    {:biotz-type :base16-integer-as-string
+     :biotz-metadata-type :integer
+     :decode/biotz-payload-transformer transformer/base16-integer-as-string-decoder}
+    :pred #(and (string? %)
+                (re-matches #"(?:0x)?[0-9a-fA-F]+" %))}))
+
 (def registry
   {;; Basic types
    :biotz.message-schema/decimal (-decimal-schema)
@@ -99,6 +132,9 @@
    :biotz.message-schema/unix-timestamp-str (-unix-timestamp-str-schema)
    :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
    :biotz.message-schema/boolean (-boolean-schema)
+   :biotz.message-schema/base10-integer-as-string (-base10-integer-as-string)
+   :biotz.message-schema/base10-decimal-as-string (-base10-decimal-as-string)
+   :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema
                                  {:type-properties

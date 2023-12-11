@@ -127,8 +127,8 @@
 (def example-4
   {:message-data
    {"timestamp" 1677161696842
-    "temperature" {"inner" 10.0 "outer" 10.0}
-    "humidity" {"inner" 5.0 "outer" 5.0}}
+    "temperature" {"inner" "10.0" "outer" "12"}
+    "humidity" {"inner" "FF" "outer" "0xe"}}
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/object
@@ -140,31 +140,31 @@
       [:biotz.message-schema/object
        ["inner"
         [:biotz.message-schema/nilable
-         [:biotz.message-schema/decimal
+         [:biotz.message-schema/base10-decimal-as-string
           {:record-name "temperature_inner"}]]]
        ["outer"
-        [:biotz.message-schema/decimal
+        [:biotz.message-schema/base10-integer-as-string
          {:record-name "temperature_outer"}]]]]
      ["humidity"
       [:biotz.message-schema/object
        ["inner"
-        [:biotz.message-schema/decimal
+        [:biotz.message-schema/base16-integer-as-string
          {:record-name "humidity_inner"}]]
        ["outer"
-        [:biotz.message-schema/decimal
+        [:biotz.message-schema/base16-integer-as-string
          {:record-name "humidity_outer"}]]]]]]
    :data
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "temperature_inner" 10.0
-     "temperature_outer" 10.0
-     "humidity_inner" 5.0
-     "humidity_outer" 5.0}]
+     "temperature_outer" 12
+     "humidity_inner" 255
+     "humidity_outer" 14}]
    :data-model-metadata
    [{:name "timestamp" :type :timestamp}
     {:name "temperature_inner" :type :decimal}
-    {:name "temperature_outer" :type :decimal}
-    {:name "humidity_inner" :type :decimal}
-    {:name "humidity_outer" :type :decimal}]})
+    {:name "temperature_outer" :type :integer}
+    {:name "humidity_inner" :type :integer}
+    {:name "humidity_outer" :type :integer}]})
 
 (def example-5
   {:message-data

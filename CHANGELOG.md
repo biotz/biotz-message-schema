@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Add `base10-integer-as-string`, `base10-decimal-as-string`, and `base16-integer-as-string` schemas.
+
 ## [0.1.8] - 2023-06-29
 
 - BREAKING CHANGE: Split `meta-schema` into two different versions: `msg-type-schema-meta-schema` and `action-msg-type-schema-meta-schema`. The difference is that the former can have a property map on the leaf nodes (with `:record-name` and `:record-timestamp`. The latter don't have it.

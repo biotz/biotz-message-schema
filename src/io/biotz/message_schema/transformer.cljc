@@ -118,3 +118,22 @@
 
 (def rfc-3339-timestamp-decoder
   {:enter jt.instant/parse})
+
+(def base10-integer-as-string-decoder
+  {:enter
+   (fn [x]
+     #?(:clj (Long/parseLong x 10)
+        :cljs (js/parseInt x 10)))})
+
+(def base10-decimal-as-string-decoder
+  {:enter
+   (fn [x]
+     #?(:clj (Double/parseDouble x)
+        :cljs (js/parseFloat x)))})
+
+(def base16-integer-as-string-decoder
+  {:enter
+   (fn [x]
+     (let [hex (re-matches #"(?:0x)?([0-9a-fA-F]+)" x)]
+       #?(:clj (Long/parseLong (second hex) 16)
+          :cljs (js/parseInt (second hex) 16))))})
