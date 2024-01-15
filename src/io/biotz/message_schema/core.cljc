@@ -25,6 +25,9 @@
     [:string {:min 1 :max 64}]
     [:re record-name-regex]]))
 
+(def record-timestamp-name
+  "timestamp")
+
 (def object-key-name-schema
   (m/schema
    [:string {:min 1}]))
@@ -123,6 +126,50 @@
     :pred #(and (string? %)
                 (re-matches #"(?:0x)?[0-9a-fA-F]+" %))}))
 
+(defn- distinct-object-key-names?
+  [object-schema]
+  (let [key-names (->> (rest object-schema)
+                       (map first))]
+    (apply distinct? key-names)))
+
+(defn- distinct-record-names?
+  [schema]
+  (let [record-names (->>
+                      (tree-seq vector? rest schema)
+                      (filter #(and
+                                (map? %)
+                                ;; NOTE all record-timestamps have the
+                                ;; same fixed name, and they can be
+                                ;; repeated.
+                                (not (:record-timestamp %))))
+                      (map :record-name))]
+    (apply distinct? record-names)))
+
+(defn- has-single-record-timestamp?
+  [schema]
+  (let [property-maps (->>
+                       (tree-seq vector? rest schema)
+                       (filter map?))
+        record-timestamp-count (->> property-maps
+                                    (filter :record-timestamp)
+                                    (count))]
+    (= 1 record-timestamp-count)))
+
+(defn- has-correct-amount-of-record-timestamps?
+  [schema]
+  (let [nodes (tree-seq vector? rest schema)
+        record-timestamp-count (->> nodes
+                                    (filter #(and (map? %) (:record-timestamp %)))
+                                    (count))
+        coll-of-identical-items-count (->> nodes
+                                           (filter #(and (vector? %)
+                                                         (= :biotz.message-schema/coll-of-identical-items
+                                                            (first %))))
+                                           (count))]
+    (if (> coll-of-identical-items-count 0)
+      (= coll-of-identical-items-count record-timestamp-count)
+      (<= record-timestamp-count 1))))
+
 (def registry
   {;; Basic types
    :biotz.message-schema/decimal (-decimal-schema)
@@ -171,9 +218,11 @@
                                 [:+ [:and vector? [:ref ::nilable-field]]]]
                 ::schema [:multi {:dispatch first}
                           [:biotz.message-schema/object
-                           [:cat
-                            any?
-                            [:+ [:and vector? [:ref ::object-field]]]]]
+                           [:and
+                            [:cat
+                             any?
+                             [:+ [:and vector? [:ref ::object-field]]]]
+                            [:fn distinct-object-key-names?]]]
                           [:biotz.message-schema/coll-of-identical-items
                            [:tuple
                             any?
@@ -195,13 +244,24 @@
 (def msg-type-schema-meta-schema
   (m/schema
    [:schema
-    {:registry {::properties [:map
-                              {:closed true}
-                              [:record-name
-                               record-name-schema]
-                              [:record-timestamp
-                               {:optional true}
-                               boolean?]]
+    {:registry {::record-timestamp-properties [:map
+                                               {:closed true}
+                                               [:record-name
+                                                [:= record-timestamp-name]]
+                                               [:record-timestamp
+                                                [:= true]]]
+                ::other-properties [:map
+                                    {:closed true}
+                                    [:record-name
+                                     [:and
+                                      record-name-schema
+                                      [:not= record-timestamp-name]]]
+                                    [:record-timestamp
+                                     {:optional true}
+                                     [:enum false nil]]]
+                ::properties [:or
+                              [:ref ::other-properties]
+                              [:ref ::record-timestamp-properties]]
                 ::nilable-field [:multi {:dispatch first}
                                  [:biotz.message-schema/nilable
                                   [:tuple
@@ -215,13 +275,17 @@
                                 [:+ [:and vector? [:ref ::nilable-field]]]]
                 ::schema [:multi {:dispatch first}
                           [:biotz.message-schema/object
-                           [:cat
-                            any?
-                            [:+ [:and vector? [:ref ::object-field]]]]]
+                           [:and
+                            [:cat
+                             any?
+                             [:+ [:and vector? [:ref ::object-field]]]]
+                            [:fn distinct-object-key-names?]]]
                           [:biotz.message-schema/coll-of-identical-items
-                           [:tuple
-                            any?
-                            [:and vector? [:ref ::schema]]]]
+                           [:and
+                            [:tuple
+                             any?
+                             [:and vector? [:ref ::schema]]]
+                            [:fn has-single-record-timestamp?]]]
                           [:biotz.message-schema/coll-of-unrelated-items
                            [:cat
                             any?
@@ -233,9 +297,12 @@
                              (apply conj [:enum] (keys registry))]
                             [:ref ::properties]]]]}}
 
-    [:tuple
-     [:= :biotz.message-schema/message]
-     ::schema]]))
+    [:and
+     [:tuple
+      [:= :biotz.message-schema/message]
+      ::schema]
+     [:fn distinct-record-names?]
+     [:fn has-correct-amount-of-record-timestamps?]]]))
 
 (defn validate-message-schema
   [meta-schema schema]

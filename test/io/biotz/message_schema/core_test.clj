@@ -348,8 +348,10 @@
     {:name "name3" :type :decimal}]})
 
 (def example-12
-  {:message-data {"name1" [{"name2" 2.0}]
-                  "name2" [{"name1" 1.0}]
+  {:message-data {"name1" [{"name2" 2.0
+                            "timestamp" 1677161696842}]
+                  "name2" [{"name1" 1.0
+                            "timestamp" 1677161696842}]
                   "name3" 3.0
                   "name4" {"name4" 4.0}}
    :malli-schema
@@ -358,12 +360,20 @@
      ["name1"
       [:biotz.message-schema/coll-of-identical-items
        [:biotz.message-schema/object
+        ["timestamp"
+         [:biotz.message-schema/unix-timestamp-int
+          {:record-name "timestamp"
+           :record-timestamp true}]]
         ["name2"
          [:biotz.message-schema/decimal
           {:record-name "name2"}]]]]]
      ["name2"
       [:biotz.message-schema/coll-of-identical-items
        [:biotz.message-schema/object
+        ["timestamp"
+         [:biotz.message-schema/unix-timestamp-int
+          {:record-name "timestamp"
+           :record-timestamp true}]]
         ["name1"
          [:biotz.message-schema/decimal
           {:record-name "name1"}]]]]]
@@ -376,13 +386,100 @@
         [:biotz.message-schema/decimal
          {:record-name "name4"}]]]]]]
    :data
-   [{"name1" 1.0 "name3" 3.0 "name4" 4.0}
-    {"name2" 2.0 "name3" 3.0 "name4" 4.0}]
+   [{"name1" 1.0 "name3" 3.0 "name4" 4.0
+     "timestamp"  (jt.instant/of-epoch-milli 1677161696842)}
+    {"name2" 2.0 "name3" 3.0 "name4" 4.0
+     "timestamp"  (jt.instant/of-epoch-milli 1677161696842)}]
    :data-model-metadata
    [{:name "name1" :type :decimal}
     {:name "name2" :type :decimal}
     {:name "name3" :type :decimal}
-    {:name "name4" :type :decimal}]})
+    {:name "name4" :type :decimal}
+    {:name "timestamp" :type :timestamp}]})
+
+(def invalid-example-1
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/decimal
+       {:record-name "name1"}]]
+     ["name1"
+      [:biotz.message-schema/decimal
+       {:record-name "name2"}]]]]})
+
+(def invalid-example-2
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/decimal
+       {:record-name "name1"}]]
+     ["name2"
+      [:biotz.message-schema/decimal
+       {:record-name "name1"}]]]]})
+
+(def invalid-example-3
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/decimal
+       {:record-name core/record-timestamp-name}]]]]})
+
+(def invalid-example-4
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["name1"
+      [:biotz.message-schema/decimal
+       {:record-name "non-timestamp-name"
+        :record-timestamp true}]]]]})
+
+(def invalid-example-5
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/coll-of-identical-items
+     [:biotz.message-schema/object
+      ["humidity"
+       [:biotz.message-schema/decimal
+        {:record-name "humidity"}]]]]]})
+
+(def invalid-example-6
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/coll-of-identical-items
+     [:biotz.message-schema/object
+      ["humidity"
+       [:biotz.message-schema/decimal
+        {:record-name "humidity"}]]
+      ["timestamp"
+       [:biotz.message-schema/unix-timestamp-int
+        {:record-name "timestamp"
+         :record-timestamp true}]]
+      ["timestamp2"
+       [:biotz.message-schema/unix-timestamp-int
+        {:record-name "timestamp"
+         :record-timestamp true}]]]]]})
+
+(def invalid-example-7
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["timestamp"
+      [:biotz.message-schema/unix-timestamp-int
+       {:record-name "timestamp"
+        :record-timestamp true}]]
+     ["items"
+      [:biotz.message-schema/coll-of-identical-items
+       [:biotz.message-schema/object
+        ["humidity"
+         [:biotz.message-schema/decimal
+          {:record-name "humidity"}]]
+        ["timestamp"
+         [:biotz.message-schema/unix-timestamp-int
+          {:record-name "timestamp"
+           :record-timestamp true}]]]]]]]})
 
 (defn- remove-leaf-nodes-properties
   "Convinience function to reuse the examples 1-12 with
@@ -421,6 +518,15 @@
     example-9 example-10
     example-11 example-12))
 
+(deftest test-invalid-malli-msg-type-schema-meta-schema
+  (are [m] (core/explain-message-schema
+            core/msg-type-schema-meta-schema
+            (:malli-schema m))
+    invalid-example-1 invalid-example-2
+    invalid-example-3 invalid-example-4
+    invalid-example-5 invalid-example-6
+    invalid-example-7))
+
 (deftest test-malli-action-msg-type-schema-meta-schema
   (are [m] (not (core/explain-message-schema
                  core/action-msg-type-schema-meta-schema
@@ -431,6 +537,12 @@
     example-7 example-8
     example-9 example-10
     example-11 example-12))
+
+(deftest test-invalid-malli-action-msg-type-schema-meta-schema
+  (are [m] (core/explain-message-schema
+            core/action-msg-type-schema-meta-schema
+            (remove-leaf-nodes-properties (:malli-schema m)))
+    invalid-example-1))
 
 (deftest test-data-transformation
   (are [m] (= (:data m)
