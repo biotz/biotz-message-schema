@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.11] - 2024-01-15
+
+- Fix 'record-name' uniqueness check.
+
 ## [0.1.10] - 2024-01-15
 
 - Add additional validity checks to the meta-schema.
