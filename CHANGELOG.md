@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.10] - 2024-01-15
+
+- Add additional validity checks to the meta-schema.
+
 ## [0.1.9] - 2023-12-11
 
 - Add `base10-integer-as-string`, `base10-decimal-as-string`, and `base16-integer-as-string` schemas.
