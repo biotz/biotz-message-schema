@@ -22,6 +22,7 @@
       [:biotz.message-schema/decimal
        {:record-name "humidity"}]]
      ["temp"
+      {:optional true}
       [:biotz.message-schema/decimal
        {:record-name "temperature"}]]
      ["on"

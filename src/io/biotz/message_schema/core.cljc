@@ -142,7 +142,7 @@
                                 ;; same fixed name, and they can be
                                 ;; repeated.
                                 (not (:record-timestamp %))))
-                      (map :record-name))]
+                      (keep :record-name))]
     (apply distinct? record-names)))
 
 (defn- has-single-record-timestamp?
