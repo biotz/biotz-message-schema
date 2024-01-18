@@ -5,6 +5,12 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.12] - 2024-01-18
+
+- Fix 'validate-message-data' and 'explain-message-data' not using closed Malli schemas.
+- Remove 'build-message-data-validator' function. It's not really needed anywhere.
+- Remove 'validate-message-schema' and 'explain-message-schema'. After removing the unneeded registry reference they were a 1-1 mapping to raw Malli validate/explain functions.
+
 ## [0.1.11] - 2024-01-15
 
 - Fix 'record-name' uniqueness check.
