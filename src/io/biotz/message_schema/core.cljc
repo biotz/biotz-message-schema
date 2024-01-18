@@ -304,29 +304,23 @@
      [:fn distinct-record-names?]
      [:fn has-correct-amount-of-record-timestamps?]]]))
 
+(defn- message-data-schema->validation-schema
+  [schema]
+  (-> schema
+      (m/schema {:registry registry})
+      (mu/closed-schema)))
 
 (defn validate-message-data
   [schema message-data]
-  (m/validate
-   schema
-   #{message-data}
-   {:registry registry}))
+  (-> schema
+      (message-data-schema->validation-schema)
+      (m/validate #{message-data})))
 
 (defn explain-message-data
   [schema message-data]
-  (m/explain
-   schema
-   #{message-data}
-   {:registry registry}))
-
-(defn build-message-data-validator
-  [schema]
-  (let [validator (-> schema
-                      (m/schema {:registry registry})
-                      (mu/closed-schema)
-                      (m/validator))]
-    (fn [message-data]
-      (validator #{message-data}))))
+  (-> schema
+      (message-data-schema->validation-schema)
+      (m/explain #{message-data})))
 
 (defn has-timestamp-record?
   "Returns `true` if the given `schema` contains a `record-timestamp`
