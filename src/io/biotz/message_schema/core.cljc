@@ -304,19 +304,6 @@
      [:fn distinct-record-names?]
      [:fn has-correct-amount-of-record-timestamps?]]]))
 
-(defn validate-message-schema
-  [meta-schema schema]
-  (m/validate
-   meta-schema
-   schema
-   {:registry registry}))
-
-(defn explain-message-schema
-  [meta-schema schema]
-  (m/explain
-   meta-schema
-   schema
-   {:registry registry}))
 
 (defn validate-message-data
   [schema message-data]
