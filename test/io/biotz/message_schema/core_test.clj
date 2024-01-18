@@ -673,4 +673,4 @@
                    {:record-name "temperature"}]]]]]
     (testing "Schema objects are closed"
       (is (core/validate-message-data schema {"temp" 1.0}))
-      (is (not (core/validate-message-data {"temp" 1.0 "hum" 2.0}))))))
+      (is (not (core/validate-message-data schema {"temp" 1.0 "hum" 2.0}))))))
