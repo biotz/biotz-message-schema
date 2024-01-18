@@ -6,7 +6,8 @@
   (:require [cljc.java-time.instant :as jt.instant]
             [clojure.test :refer :all]
             [clojure.walk :as walk]
-            [io.biotz.message-schema.core :as core]))
+            [io.biotz.message-schema.core :as core]
+            [malli.core :as m]))
 
 (def example-1
   {:message-data
@@ -509,7 +510,7 @@
     example-11 example-12))
 
 (deftest test-malli-msg-type-schema-meta-schema
-  (are [m] (not (core/explain-message-schema
+  (are [m] (not (m/explain
                  core/msg-type-schema-meta-schema
                  (:malli-schema m)))
     example-1 example-2
@@ -520,7 +521,7 @@
     example-11 example-12))
 
 (deftest test-invalid-malli-msg-type-schema-meta-schema
-  (are [m] (core/explain-message-schema
+  (are [m] (m/explain
             core/msg-type-schema-meta-schema
             (:malli-schema m))
     invalid-example-1 invalid-example-2
@@ -529,7 +530,7 @@
     invalid-example-7))
 
 (deftest test-malli-action-msg-type-schema-meta-schema
-  (are [m] (not (core/explain-message-schema
+  (are [m] (not (m/explain
                  core/action-msg-type-schema-meta-schema
                  (remove-leaf-nodes-properties (:malli-schema m))))
     example-1 example-2
@@ -540,7 +541,7 @@
     example-11 example-12))
 
 (deftest test-invalid-malli-action-msg-type-schema-meta-schema
-  (are [m] (core/explain-message-schema
+  (are [m] (m/explain
             core/action-msg-type-schema-meta-schema
             (remove-leaf-nodes-properties (:malli-schema m)))
     invalid-example-1))
@@ -669,8 +670,7 @@
                 [:biotz.message-schema/object
                  ["temp"
                   [:biotz.message-schema/decimal
-                   {:record-name "temperature"}]]]]
-        validator (core/build-message-data-validator schema)]
+                   {:record-name "temperature"}]]]]]
     (testing "Schema objects are closed"
-      (is (validator {"temp" 1.0}))
-      (is (not (validator {"temp" 1.0 "hum" 2.0}))))))
+      (is (core/validate-message-data schema {"temp" 1.0}))
+      (is (not (core/validate-message-data {"temp" 1.0 "hum" 2.0}))))))
