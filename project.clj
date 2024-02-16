@@ -5,9 +5,10 @@
                  [com.widdindustries/cljc.java-time "0.1.21"]]
   :plugins [[s3-wagon-private "1.3.5"]]
   :deploy-repositories
-  [["magnet-s3-repo" {:url "s3p://mvn-private-repository/releases/"
-                      :no-auth true
-                      :sign-releases false}]]
+  [["private-mvn-repo" {:url "s3p://biotz-mvn-private-repository/releases/"
+                        :username :env/private_mvn_repo_username
+                        :passphrase :env/private_mvn_repo_password
+                        :sign-releases false}]]
   :test-paths ["test"]
   :profiles {:dev [:project/dev :profiles/dev]
              :repl {:prep-tasks ^:replace ["javac" "compile"]

@@ -12,6 +12,8 @@ pipelines:
     '*.*.*':
       - step:
           script:
+            - export MVN_PRIVATE_REPO_USERNAME=$AWS_ACCESS_KEY_ID
+            - export MVN_PRIVATE_REPO_PASSWORD=$AWS_SECRET_ACCESS_KEY
             - /usr/local/bin/all-checks.sh
             - ./ci/lint-and-test.sh
             - ./ci/publish-jar.sh

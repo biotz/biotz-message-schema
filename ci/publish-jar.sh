@@ -3,4 +3,4 @@
 
 set -e -o pipefail
 
-docker exec biotz-message-schema lein deploy magnet-s3-repo
+docker exec biotz-message-schema lein deploy private-mvn-repo
