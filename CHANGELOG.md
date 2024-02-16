@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Upgrade dependencies
+
 ## [0.1.12] - 2024-01-18
 
 - Fix 'validate-message-data' and 'explain-message-data' not using closed Malli schemas.

@@ -1,7 +1,7 @@
 (defproject io.biotz/message-schema "0.1.13-SNAPSHOT"
   :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
-  :dependencies [[org.clojure/clojure "1.11.0"]
-                 [metosin/malli "0.10.2"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
+                 [metosin/malli "0.14.0"]
                  [com.widdindustries/cljc.java-time "0.1.21"]]
   :plugins [[s3-wagon-private "1.3.5"]]
   :deploy-repositories
@@ -26,9 +26,9 @@
                                       :debug [:progress :time]}
                            :resource-paths ["dev/resources"]
                            :source-paths ["dev/src"]
-                           :dependencies [[criterium "0.4.4"]]
-                           :plugins [[jonase/eastwood "1.3.0"]
-                                     [lein-cljfmt "0.8.0"]]}}
+                           :dependencies [[criterium "0.4.6"]]
+                           :plugins [[jonase/eastwood "1.4.2"]
+                                     [dev.weavejester/lein-cljfmt "0.12.0"]]}}
   :test-selectors {:default (fn [m] (not (or (:integration m) (:regression m))))
                    :all (constantly true)
                    :integration :integration
