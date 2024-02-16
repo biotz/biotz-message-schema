@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.13] - 2024-02-16
+
 - Upgrade dependencies
 
 ## [0.1.12] - 2024-01-18
