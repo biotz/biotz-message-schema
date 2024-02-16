@@ -3,4 +3,8 @@
 
 set -e -o pipefail
 
-docker exec biotz-message-schema lein deploy private-mvn-repo
+docker exec \
+    --env "MVN_PRIVATE_REPO_USERNAME" \
+    --env "MVN_PRIVATE_REPO_PASSWORD" \
+    biotz-message-schema \
+    lein deploy private-mvn-repo

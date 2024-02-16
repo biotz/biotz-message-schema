@@ -3,18 +3,6 @@
 
 set -eu -o pipefail
 
-IMAGE_TAG=local/biotz-message-schema/ci:latest
-
-docker build -t "${IMAGE_TAG}" .
-
-docker run --rm --detach \
-    --env "MVN_PRIVATE_REPO_USERNAME" \
-    --env "MVN_PRIVATE_REPO_PASSWORD" \
-    --name "biotz-message-schema" \
-    --volume "${PWD}:/app" \
-    "${IMAGE_TAG}" \
-    tail -f /dev/null
-
 echo "clj-kondo"
 docker exec biotz-message-schema clj-kondo --lint src --lint test
 
