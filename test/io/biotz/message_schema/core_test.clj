@@ -11,7 +11,12 @@
 
 (def example-1
   {:message-data
-   {"timestamp" "1677161696842" "hum" 10.0 "temp" 20.0 "on" true}
+   {"timestamp" "1677161696842"
+    "hum" 10.0
+    "temp" 20.0
+    "on" true
+    "onstr" "true"
+    "onint" 0}
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/object
@@ -30,17 +35,31 @@
       {:optional true}
       [:biotz.message-schema/nilable
        [:biotz.message-schema/boolean
-        {:record-name "on"}]]]]]
+        {:record-name "on"}]]]
+     ["onstr"
+      {:optional true}
+      [:biotz.message-schema/nilable
+       [:biotz.message-schema/boolean-as-string
+        {:record-name "onstr"}]]]
+     ["onint"
+      {:optional true}
+      [:biotz.message-schema/nilable
+       [:biotz.message-schema/boolean-as-integer
+        {:record-name "onint"}]]]]]
    :data
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "humidity" 10.0
      "temperature" 20.0
-     "on" true}]
+     "on" true
+     "onstr" true
+     "onint" false}]
    :data-model-metadata
    [{:name "timestamp" :type :timestamp}
     {:name "humidity" :type :decimal}
     {:name "temperature" :type :decimal}
-    {:name "on" :type :boolean}]})
+    {:name "on" :type :boolean}
+    {:name "onstr" :type :boolean}
+    {:name "onint" :type :boolean}]})
 
 (def example-2
   {:message-data

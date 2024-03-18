@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Add 'boolean-as-string' and 'boolean-as-integer' schemas.
+
 ## [0.1.13] - 2024-02-16
 
 - Upgrade dependencies

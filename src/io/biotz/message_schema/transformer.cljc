@@ -3,7 +3,8 @@
 ;; file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 (ns io.biotz.message-schema.transformer
-  (:require [cljc.java-time.instant :as jt.instant]
+  (:require #?(:cljs [clojure.string :as str])
+            [cljc.java-time.instant :as jt.instant]
             [clojure.set :as set]
             [malli.core :as m]
             [malli.util :as mu]))
@@ -137,3 +138,15 @@
      (let [hex (re-matches #"(?:0x)?([0-9a-fA-F]+)" x)]
        #?(:clj (Long/parseLong (second hex) 16)
           :cljs (js/parseInt (second hex) 16))))})
+
+(def boolean-as-string-decoder
+  {:enter
+   (fn [x]
+     #?(:clj (Boolean/parseBoolean x)
+        :cljs (boolean (= "true" (str/lower-case x)))))})
+
+(def boolean-as-integer-decoder
+  {:enter
+   (fn [x]
+     (not= 0 x))})
+

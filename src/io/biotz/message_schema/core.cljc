@@ -93,6 +93,27 @@
     :type-properties {:biotz-type :boolean}
     :pred boolean?}))
 
+(defn -boolean-as-string-schema
+  []
+  (m/-simple-schema
+   {:type :boolean
+    :type-properties
+    {:biotz-type :boolean-as-string
+     :biotz-metadata-type :boolean
+     :decode/biotz-payload-transformer transformer/boolean-as-string-decoder}
+    :pred #(and (string? %)
+                (re-matches #"^(?i)(true|false)$" %))}))
+
+(defn -boolean-as-integer-schema
+  []
+  (m/-simple-schema
+   {:type :boolean
+    :type-properties
+    {:biotz-type :boolean-as-integer
+     :biotz-metadata-type :boolean
+     :decode/biotz-payload-transformer transformer/boolean-as-integer-decoder}
+    :pred int?}))
+
 (defn -base10-integer-as-string
   []
   (m/-simple-schema
@@ -179,6 +200,8 @@
    :biotz.message-schema/unix-timestamp-str (-unix-timestamp-str-schema)
    :biotz.message-schema/rfc-3339-timestamp (-rfc-3339-timestamp-schema)
    :biotz.message-schema/boolean (-boolean-schema)
+   :biotz.message-schema/boolean-as-string (-boolean-as-string-schema)
+   :biotz.message-schema/boolean-as-integer (-boolean-as-integer-schema)
    :biotz.message-schema/base10-integer-as-string (-base10-integer-as-string)
    :biotz.message-schema/base10-decimal-as-string (-base10-decimal-as-string)
    :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string)
