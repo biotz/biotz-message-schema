@@ -70,21 +70,26 @@
   []
   (m/-simple-schema
    {:type :decimal
-    :type-properties {:biotz-type :decimal}
+    :type-properties {:biotz-type :decimal
+                      :biotz-canonical-type :decimal
+                      :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(or (double? %) (int? %))}))
 
 (defn -integer-schema
   []
   (m/-simple-schema
    {:type :integer
-    :type-properties {:biotz-type :integer}
+    :type-properties {:biotz-type :integer
+                      :biotz-canonical-type :integer
+                      :decode/biotz-value-transformer transformer/value-transformer}
     :pred int?}))
 
 (defn -text-schema
   []
   (m/-simple-schema
    {:type :text
-    :type-properties {:biotz-type :text}
+    :type-properties {:biotz-type :text
+                      :biotz-canonical-type :text}
     :pred string?}))
 
 (defn -boolean-schema
@@ -124,7 +129,8 @@
     :type-properties
     {:biotz-type :base10-integer-as-string
      :biotz-canonical-type :integer
-     :decode/biotz-canonicalization-transformer transformer/base10-integer-as-string-decoder}
+     :decode/biotz-canonicalization-transformer transformer/base10-integer-as-string-decoder
+     :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(and (string? %)
                 (re-matches #"[+-]?[0-9]+" %))}))
 
@@ -135,7 +141,8 @@
     :type-properties
     {:biotz-type :base10-decimal-as-string
      :biotz-canonical-type :decimal
-     :decode/biotz-canonicalization-transformer transformer/base10-decimal-as-string-decoder}
+     :decode/biotz-canonicalization-transformer transformer/base10-decimal-as-string-decoder
+     :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(and (string? %)
                 (re-matches #"[+-]?([0-9]*\.[0-9]+|[0-9]+)" %))}))
 
@@ -146,7 +153,8 @@
     :type-properties
     {:biotz-type :base16-integer-as-string
      :biotz-canonical-type :integer
-     :decode/biotz-canonicalization-transformer transformer/base16-integer-as-string-decoder}
+     :decode/biotz-canonicalization-transformer transformer/base16-integer-as-string-decoder
+     :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(and (string? %)
                 (re-matches #"(?:0x)?[0-9a-fA-F]+" %))}))
 
@@ -288,6 +296,32 @@
                 ::timestamp-properties [:or
                                         [:ref ::other-properties]
                                         [:ref ::record-timestamp-properties]]
+                ::transformation [:multi {:dispatch :type}
+                                  [:offset+scale
+                                   [:map
+                                    {:closed true}
+                                    [:type
+                                     [:= :offset+scale]]
+                                    [:parameters
+                                     [:map
+                                      {:closed true}
+                                      [:offset
+                                       [:or
+                                        [:int]
+                                        [:double]]]
+                                      [:scale
+                                       [:or
+                                        [:int {:min 0}]
+                                        [:double {:min 0}]]]]]]]]
+                ::transformations [:vector
+                                   [:ref ::transformation]]
+                ::number-properties [:merge
+                                     [:ref ::other-properties]
+                                     [:map
+                                      {:closed true}
+                                      [:transformations
+                                       {:optional true}
+                                       [:ref ::transformations]]]]
                 ::nilable-field [:multi {:dispatch first}
                                  [:biotz.message-schema/nilable
                                   [:tuple
@@ -326,24 +360,24 @@
                           [:biotz.message-schema/decimal
                            [:tuple
                             [:any]
-                            [:ref ::other-properties]]]
+                            [:ref ::number-properties]]]
                           [:biotz.message-schema/base10-decimal-as-string
                            [:tuple
                             [:any]
-                            [:ref ::other-properties]]]
+                            [:ref ::number-properties]]]
                           ;; INTEGER
                           [:biotz.message-schema/integer
                            [:tuple
                             [:any]
-                            [:ref ::other-properties]]]
+                            [:ref ::number-properties]]]
                           [:biotz.message-schema/base10-integer-as-string
                            [:tuple
                             [:any]
-                            [:ref ::other-properties]]]
+                            [:ref ::number-properties]]]
                           [:biotz.message-schema/base16-integer-as-string
                            [:tuple
                             [:any]
-                            [:ref ::other-properties]]]
+                            [:ref ::number-properties]]]
                           ;; BOOLEAN
                           [:biotz.message-schema/boolean
                            [:tuple
@@ -375,7 +409,8 @@
       [:= :biotz.message-schema/message]
       ::schema]
      [:fn distinct-record-names?]
-     [:fn has-correct-amount-of-record-timestamps?]]]))
+     [:fn has-correct-amount-of-record-timestamps?]]]
+   {:registry (merge (m/default-schemas) (mu/schemas))}))
 
 (defn- message-data-schema->validation-schema
   [schema]
@@ -411,7 +446,8 @@
          schema
          {:registry registry}
          (mt/transformer
-          {:name :biotz-canonicalization-transformer}))]
+          {:name :biotz-canonicalization-transformer}
+          {:name :biotz-value-transformer}))]
     (fn [message-data]
       (decoder #{message-data}))))
 
@@ -421,12 +457,23 @@
    (fn [data-model-metadata {:keys [schema]}]
      (let [properties (m/properties schema)
            type-properties (m/type-properties schema)]
-       (cond-> data-model-metadata
-         (and (seq properties)
-              (not (some #(= (:record-name properties) (:name %)) data-model-metadata)))
-         (conj {:name (:record-name properties)
-                :type (or (get type-properties :biotz-metadata-type)
-                          (get type-properties :biotz-type))}))))
+       (if-let [record-name (:record-name properties)]
+         (cond
+           (and
+            (= record-timestamp-name record-name)
+            (some #(= record-name (:name %)) data-model-metadata))
+           data-model-metadata
+
+           (seq (:transformations properties))
+           (conj data-model-metadata
+                 {:name record-name
+                  :type :decimal})
+
+           :else
+           (conj data-model-metadata
+                 {:name record-name
+                  :type (get type-properties :biotz-canonical-type)}))
+         data-model-metadata)))
    []
    (mu/subschemas schema {:registry registry})))
 

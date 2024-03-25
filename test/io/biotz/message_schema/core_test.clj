@@ -26,11 +26,15 @@
         :record-name "timestamp"}]]
      ["hum"
       [:biotz.message-schema/decimal
-       {:record-name "humidity"}]]
+       {:transformations [{:type :offset+scale
+                           :parameters {:scale 2 :offset 0}}]
+        :record-name "humidity"}]]
      ["temp"
       {:optional true}
       [:biotz.message-schema/decimal
-       {:record-name "temperature"}]]
+       {:transformations [{:type :offset+scale
+                           :parameters {:scale 1 :offset 1.5}}]
+        :record-name "temperature"}]]
      ["on"
       {:optional true}
       [:biotz.message-schema/nilable
@@ -48,8 +52,8 @@
         {:record-name "onint"}]]]]]
    :data
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
-     "humidity" 10.0
-     "temperature" 20.0
+     "humidity" 20.0
+     "temperature" 21.5
      "on" true
      "onstr" true
      "onint" false}]
@@ -502,6 +506,13 @@
           {:record-name "timestamp"
            :record-timestamp true}]]]]]]]})
 
+(def invalid-example-8
+  {:malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/integer
+     {:record-name "foo"
+      :transformations [{:type :invent :parameters {}}]}]]})
+
 (defn- remove-leaf-nodes-properties
   "Convinience function to reuse the examples 1-12 with
   `action-msg-type-schema-meta-schema` tests. The difference with
@@ -546,7 +557,7 @@
     invalid-example-1 invalid-example-2
     invalid-example-3 invalid-example-4
     invalid-example-5 invalid-example-6
-    invalid-example-7))
+    invalid-example-7 invalid-example-8))
 
 (deftest test-malli-action-msg-type-schema-meta-schema
   (are [m] (not (m/explain

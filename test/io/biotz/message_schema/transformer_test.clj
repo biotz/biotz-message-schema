@@ -25,3 +25,28 @@
       (is (true? (decoder 1)))
       (is (true? (decoder -1)))
       (is (false? (decoder 0))))))
+
+(deftest offset+scale-value-transformer-test
+  (testing "Testing offset+scale-value-transformar"
+    (letfn [(transform-value [value transformations]
+              (let [schema [:any
+                            {:transformations transformations
+                             :decode/test-transformer transformer/value-transformer}]
+                    transformer (mt/transformer {:name :test-transformer})]
+                (m/decode schema value transformer)))]
+      (are [transformations value result]
+           (= result (transform-value value transformations))
+        [{:type :offset+scale :parameters {:offset 10 :scale 2}}]
+        0 10
+
+        [{:type :offset+scale :parameters {:offset 0 :scale 1}}]
+        1 1
+
+        [{:type :offset+scale :parameters {:offset 0 :scale 2}}]
+        1 2
+
+        [{:type :offset+scale :parameters {:offset -10 :scale 2}}]
+        2 -6
+
+        [{:type :offset+scale :parameters {:offset 10.5 :scale 1.5}}]
+        2 13.5))))

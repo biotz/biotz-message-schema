@@ -150,3 +150,19 @@
    (fn [x]
      (not= 0 x))})
 
+(defmulti transform-value
+  (fn [_value transformer]
+    (:type transformer)))
+
+(defmethod transform-value :offset+scale
+  [value {{:keys [offset scale]} :parameters}]
+  (+ (* value scale) offset))
+
+(def value-transformer
+  {:compile
+   (fn [schema _]
+     (let [transformations (:transformations (m/properties schema))]
+       (when (seq transformations)
+         {:leave
+          (fn [x]
+            (reduce transform-value x transformations))})))})
