@@ -5,6 +5,7 @@
 (ns io.biotz.message-schema.core
   (:require [cljc.java-time.instant :as jt.instant]
             [clojure.edn :as edn]
+            [clojure.string :as str]
             [io.biotz.message-schema.transformer :as transformer]
             [malli.core :as m]
             [malli.transform :as mt]
@@ -104,7 +105,7 @@
      :biotz-canonical-type :boolean
      :decode/biotz-canonicalization-transformer transformer/boolean-as-string-decoder}
     :pred #(and (string? %)
-                (re-matches #"^(?i)(true|false)$" %))}))
+                (re-matches #"^(true|false)$" (str/lower-case %)))}))
 
 (defn -boolean-as-integer-schema
   []
