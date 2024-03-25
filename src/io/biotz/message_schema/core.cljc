@@ -37,8 +37,8 @@
   (m/-simple-schema
    {:type :unix-timestamp-int
     :type-properties {:biotz-type :unix-timestamp-int
-                      :biotz-metadata-type :timestamp
-                      :decode/biotz-payload-transformer transformer/unix-timestamp-int-decoder}
+                      :biotz-canonical-type :timestamp
+                      :decode/biotz-canonicalization-transformer transformer/unix-timestamp-int-decoder}
     :pred int?}))
 
 (defn -unix-timestamp-str-schema
@@ -46,8 +46,8 @@
   (m/-simple-schema
    {:type :unix-timestamp-str
     :type-properties {:biotz-type :unix-timestamp-str
-                      :biotz-metadata-type :timestamp
-                      :decode/biotz-payload-transformer transformer/unix-timestamp-str-decoder}
+                      :biotz-canonical-type :timestamp
+                      :decode/biotz-canonicalization-transformer transformer/unix-timestamp-str-decoder}
     :pred #(and (string? %)
                 (re-matches max-long-digits-regex %)
                 (int? (edn/read-string %)))}))
@@ -57,8 +57,8 @@
   (m/-simple-schema
    {:type :rfc-3339-timestamp
     :type-properties {:biotz-type :rfc-3339-timestamp
-                      :biotz-metadata-type :timestamp
-                      :decode/biotz-payload-transformer transformer/rfc-3339-timestamp-decoder}
+                      :biotz-canonical-type :timestamp
+                      :decode/biotz-canonicalization-transformer transformer/rfc-3339-timestamp-decoder}
     :pred #(and (string? %)
                 (re-matches rfc-3339-regex %)
                 (try
@@ -90,7 +90,9 @@
   []
   (m/-simple-schema
    {:type :boolean
-    :type-properties {:biotz-type :boolean}
+    :type-properties
+    {:biotz-type :boolean
+     :biotz-canonical-type :boolean}
     :pred boolean?}))
 
 (defn -boolean-as-string-schema
@@ -99,8 +101,8 @@
    {:type :boolean
     :type-properties
     {:biotz-type :boolean-as-string
-     :biotz-metadata-type :boolean
-     :decode/biotz-payload-transformer transformer/boolean-as-string-decoder}
+     :biotz-canonical-type :boolean
+     :decode/biotz-canonicalization-transformer transformer/boolean-as-string-decoder}
     :pred #(and (string? %)
                 (re-matches #"^(?i)(true|false)$" %))}))
 
@@ -110,8 +112,8 @@
    {:type :boolean
     :type-properties
     {:biotz-type :boolean-as-integer
-     :biotz-metadata-type :boolean
-     :decode/biotz-payload-transformer transformer/boolean-as-integer-decoder}
+     :biotz-canonical-type :boolean
+     :decode/biotz-canonicalization-transformer transformer/boolean-as-integer-decoder}
     :pred int?}))
 
 (defn -base10-integer-as-string
@@ -120,8 +122,8 @@
    {:type :integer
     :type-properties
     {:biotz-type :base10-integer-as-string
-     :biotz-metadata-type :integer
-     :decode/biotz-payload-transformer transformer/base10-integer-as-string-decoder}
+     :biotz-canonical-type :integer
+     :decode/biotz-canonicalization-transformer transformer/base10-integer-as-string-decoder}
     :pred #(and (string? %)
                 (re-matches #"[+-]?[0-9]+" %))}))
 
@@ -131,8 +133,8 @@
    {:type :decimal
     :type-properties
     {:biotz-type :base10-decimal-as-string
-     :biotz-metadata-type :decimal
-     :decode/biotz-payload-transformer transformer/base10-decimal-as-string-decoder}
+     :biotz-canonical-type :decimal
+     :decode/biotz-canonicalization-transformer transformer/base10-decimal-as-string-decoder}
     :pred #(and (string? %)
                 (re-matches #"[+-]?([0-9]*\.[0-9]+|[0-9]+)" %))}))
 
@@ -142,8 +144,8 @@
    {:type :integer
     :type-properties
     {:biotz-type :base16-integer-as-string
-     :biotz-metadata-type :integer
-     :decode/biotz-payload-transformer transformer/base16-integer-as-string-decoder}
+     :biotz-canonical-type :integer
+     :decode/biotz-canonicalization-transformer transformer/base16-integer-as-string-decoder}
     :pred #(and (string? %)
                 (re-matches #"(?:0x)?[0-9a-fA-F]+" %))}))
 
@@ -208,14 +210,14 @@
    ;; Collections
    :biotz.message-schema/object (m/-map-schema
                                  {:type-properties
-                                  {:decode/biotz-payload-transformer transformer/object-decoder}})
+                                  {:decode/biotz-canonicalization-transformer transformer/object-decoder}})
    :biotz.message-schema/coll-of-identical-items (m/-collection-schema
                                                   {:type :vector
                                                    :pred vector?
                                                    :empty []})
    :biotz.message-schema/coll-of-unrelated-items (m/-tuple-schema
                                                   {:type-properties
-                                                   {:decode/biotz-payload-transformer transformer/coll-of-unrelated-items-decoder}})
+                                                   {:decode/biotz-canonicalization-transformer transformer/coll-of-unrelated-items-decoder}})
    ;; Other
    :biotz.message-schema/nilable (m/-maybe-schema)
    :biotz.message-schema/message (m/-collection-schema
@@ -223,7 +225,7 @@
                                    :pred set?
                                    :empty #{}
                                    :in (fn [_ x] x)
-                                   :type-properties {:decode/biotz-payload-transformer transformer/message-decoder}})})
+                                   :type-properties {:decode/biotz-canonicalization-transformer transformer/message-decoder}})})
 
 (def action-msg-type-schema-meta-schema
   (m/schema
@@ -361,7 +363,7 @@
          schema
          {:registry registry}
          (mt/transformer
-          {:name :biotz-payload-transformer}))]
+          {:name :biotz-canonicalization-transformer}))]
     (fn [message-data]
       (decoder #{message-data}))))
 
