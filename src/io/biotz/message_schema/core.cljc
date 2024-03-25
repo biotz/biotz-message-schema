@@ -284,44 +284,91 @@
                                     [:record-timestamp
                                      {:optional true}
                                      [:enum false nil]]]
-                ::properties [:or
-                              [:ref ::other-properties]
-                              [:ref ::record-timestamp-properties]]
+                ::timestamp-properties [:or
+                                        [:ref ::other-properties]
+                                        [:ref ::record-timestamp-properties]]
                 ::nilable-field [:multi {:dispatch first}
                                  [:biotz.message-schema/nilable
                                   [:tuple
-                                   any?
+                                   [:any]
                                    [:and vector? [:ref ::schema]]]]
                                  [::m/default
                                   [:ref ::schema]]]
                 ::object-field [:cat
                                 object-key-name-schema
-                                [:? [:map [:optional {:optional true} boolean?]]]
+                                [:? [:map [:optional {:optional true} [:boolean]]]]
                                 [:+ [:and vector? [:ref ::nilable-field]]]]
                 ::schema [:multi {:dispatch first}
+                          ;; COLLECTIONS
                           [:biotz.message-schema/object
                            [:and
                             [:cat
-                             any?
+                             [:any]
                              [:+ [:and vector? [:ref ::object-field]]]]
                             [:fn distinct-object-key-names?]]]
                           [:biotz.message-schema/coll-of-identical-items
                            [:and
                             [:tuple
-                             any?
+                             [:any]
                              [:and vector? [:ref ::schema]]]
                             [:fn has-single-record-timestamp?]]]
                           [:biotz.message-schema/coll-of-unrelated-items
                            [:cat
-                            any?
+                            [:any]
                             [:+ [:and vector? [:ref ::nilable-field]]]]]
-                          [::m/default
+                          ;; TEXT
+                          [:biotz.message-schema/text
                            [:tuple
-                            [:and
-                             qualified-keyword?
-                             (apply conj [:enum] (keys registry))]
-                            [:ref ::properties]]]]}}
-
+                            [:any]
+                            [:ref ::other-properties]]]
+                          ;; DECIMAL
+                          [:biotz.message-schema/decimal
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          [:biotz.message-schema/base10-decimal-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          ;; INTEGER
+                          [:biotz.message-schema/integer
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          [:biotz.message-schema/base10-integer-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          [:biotz.message-schema/base16-integer-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          ;; BOOLEAN
+                          [:biotz.message-schema/boolean
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          [:biotz.message-schema/boolean-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          [:biotz.message-schema/boolean-as-integer
+                           [:tuple
+                            [:any]
+                            [:ref ::other-properties]]]
+                          ;; TIMESTAMP
+                          [:biotz.message-schema/unix-timestamp-int
+                           [:tuple
+                            [:any]
+                            [:ref ::timestamp-properties]]]
+                          [:biotz.message-schema/unix-timestamp-str
+                           [:tuple
+                            [:any]
+                            [:ref ::timestamp-properties]]]
+                          [:biotz.message-schema/rfc-3339-timestamp
+                           [:tuple
+                            [:any]
+                            [:ref ::timestamp-properties]]]]}}
     [:and
      [:tuple
       [:= :biotz.message-schema/message]
