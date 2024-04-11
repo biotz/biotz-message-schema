@@ -5,7 +5,13 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.14] - 2024-04-11
+
 - Add 'boolean-as-string' and 'boolean-as-integer' schemas.
+- Rename 'metadata-type' to 'canonical-type'
+- Improve meta-schema to better handle type specific props
+- Fix boolean-as-string schema not working in CLJS
+- Implement first version of offset + scale transformation
 
 ## [0.1.13] - 2024-02-16
 
