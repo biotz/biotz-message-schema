@@ -154,7 +154,7 @@
   (fn [_value transformer]
     (:type transformer)))
 
-(defmethod transform-value :offset+scale
+(defmethod transform-value :scale+offset
   [value {{:keys [offset scale]} :parameters}]
   (+ (* value scale) offset))
 

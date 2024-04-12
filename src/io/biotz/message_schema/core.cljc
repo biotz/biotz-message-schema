@@ -297,22 +297,22 @@
                                         [:ref ::other-properties]
                                         [:ref ::record-timestamp-properties]]
                 ::transformation [:multi {:dispatch :type}
-                                  [:offset+scale
+                                  [:scale+offset
                                    [:map
                                     {:closed true}
                                     [:type
-                                     [:= :offset+scale]]
+                                     [:= :scale+offset]]
                                     [:parameters
                                      [:map
                                       {:closed true}
-                                      [:offset
-                                       [:or
-                                        [:int]
-                                        [:double]]]
                                       [:scale
                                        [:or
                                         [:int {:min 0}]
-                                        [:double {:min 0}]]]]]]]]
+                                        [:double {:min 0}]]]
+                                      [:offset
+                                       [:or
+                                        [:int]
+                                        [:double]]]]]]]]
                 ::transformations [:vector
                                    [:ref ::transformation]]
                 ::number-properties [:merge

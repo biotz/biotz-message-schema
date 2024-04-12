@@ -26,13 +26,13 @@
         :record-name "timestamp"}]]
      ["hum"
       [:biotz.message-schema/decimal
-       {:transformations [{:type :offset+scale
+       {:transformations [{:type :scale+offset
                            :parameters {:scale 2 :offset 0}}]
         :record-name "humidity"}]]
      ["temp"
       {:optional true}
       [:biotz.message-schema/decimal
-       {:transformations [{:type :offset+scale
+       {:transformations [{:type :scale+offset
                            :parameters {:scale 1 :offset 1.5}}]
         :record-name "temperature"}]]
      ["on"
