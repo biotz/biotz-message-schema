@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.15] - 2024-04-12
+
+- Rename 'offset+scale' to 'scale+offset'
+
 ## [0.1.14] - 2024-04-11
 
 - Add 'boolean-as-string' and 'boolean-as-integer' schemas.
