@@ -551,6 +551,13 @@
    :data-model-metadata
    [{:name "timestamp" :type :timestamp}]})
 
+(def invalid-example-10
+  {:message-data 12345678900
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/integer
+     {:record-name "invalid-integer"}]]})
+
 (defn- remove-leaf-nodes-properties
   "Convinience function to reuse the examples 1-12 with
   `action-msg-type-schema-meta-schema` tests. The difference with
@@ -647,7 +654,8 @@
   (are [m] (not (core/validate-message-data
                  (:malli-schema m)
                  (:message-data m)))
-    invalid-example-9))
+    invalid-example-9
+    invalid-example-10))
 
 (deftest test-data-model-metadata
   (are [m] (= (->> (:data-model-metadata m)

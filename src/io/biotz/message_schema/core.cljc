@@ -18,6 +18,20 @@
   "Optional sign, plus at most 20 digits (to reduced DoS attacks)"
   #"-?\d{1,20}")
 
+(def ^:private integer-max-value
+  "Maximum value for a 32 bit signed integer (like java.lang.Integer).
+
+  Defined here so we can use the value both in CLJ and CLJS, where
+  integers have a higher maximum value."
+  2147483647)
+
+(def ^:private integer-min-value
+  "Minimum value for a 32 bit signed integer (like java.lang.Integer).
+
+  Defined here so we can use the value both in CLJ and CLJS, where
+  integers have a lower mimimum value."
+  -2147483648)
+
 (def record-name-regex
   #"^[a-z_][a-z0-9_]{0,63}$")
 
@@ -83,7 +97,7 @@
     :type-properties {:biotz-type :integer
                       :biotz-canonical-type :integer
                       :decode/biotz-value-transformer transformer/value-transformer}
-    :pred int?}))
+    :pred #(and (int? %) (<= integer-min-value % integer-max-value))}))
 
 (defn -text-schema
   []
