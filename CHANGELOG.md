@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+- Allow negative values in "Unix timestamp, as string" data type, for symmetry with "Unix timestamp, as integer" data type.
+
 ## [0.1.15] - 2024-04-12
 
 - Rename 'offset+scale' to 'scale+offset'

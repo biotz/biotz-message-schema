@@ -14,8 +14,9 @@
 (def ^:private rfc-3339-regex
   #"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:(?:[0-5][0-9]|60)(?:\.\d{1,9})?Z")
 
-(def ^:private max-long-digits-regex
-  #"\d{1,20}")
+(def ^:private unix-timestamp-str-regex
+  "Optional sign, plus at most 20 digits (to reduced DoS attacks)"
+  #"-?\d{1,20}")
 
 (def record-name-regex
   #"^[a-z_][a-z0-9_]{0,63}$")
@@ -50,7 +51,7 @@
                       :biotz-canonical-type :timestamp
                       :decode/biotz-canonicalization-transformer transformer/unix-timestamp-str-decoder}
     :pred #(and (string? %)
-                (re-matches max-long-digits-regex %)
+                (re-matches unix-timestamp-str-regex %)
                 (int? (edn/read-string %)))}))
 
 (defn -rfc-3339-timestamp-schema

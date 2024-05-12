@@ -113,7 +113,7 @@
 (def unix-timestamp-str-decoder
   {:enter
    (fn [x]
-     (let [y #?(:clj (Long/parseUnsignedLong x)
+     (let [y #?(:clj (Long/parseLong x)
                 :cljs (js/parseInt x))]
        (jt.instant/of-epoch-milli y)))})
 

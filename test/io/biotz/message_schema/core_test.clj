@@ -422,6 +422,29 @@
     {:name "name4" :type :decimal}
     {:name "timestamp" :type :timestamp}]})
 
+(def example-13
+  {:message-data
+   {"timestamp" "-1677161696842"
+    "hum" 10.0}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["timestamp"
+      [:biotz.message-schema/unix-timestamp-str
+       {:record-timestamp true
+        :record-name "timestamp"}]]
+     ["hum"
+      [:biotz.message-schema/decimal
+       {:transformations [{:type :scale+offset
+                           :parameters {:scale 2 :offset 0}}]
+        :record-name "humidity"}]]]]
+   :data
+   [{"timestamp" (jt.instant/of-epoch-milli -1677161696842)
+     "humidity" 20.0}]
+   :data-model-metadata
+   [{:name "timestamp" :type :timestamp}
+    {:name "humidity" :type :decimal}]})
+
 (def invalid-example-1
   {:malli-schema
    [:biotz.message-schema/message
@@ -513,6 +536,21 @@
      {:record-name "foo"
       :transformations [{:type :invent :parameters {}}]}]]})
 
+(def invalid-example-9
+  {:message-data
+   {"timestamp" "16771616968420000000"}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["timestamp"
+      [:biotz.message-schema/unix-timestamp-str
+       {:record-timestamp true
+        :record-name "timestamp"}]]]]
+   :data
+   [{"timestamp" (jt.instant/of-epoch-milli -1677161696842)}]
+   :data-model-metadata
+   [{:name "timestamp" :type :timestamp}]})
+
 (defn- remove-leaf-nodes-properties
   "Convinience function to reuse the examples 1-12 with
   `action-msg-type-schema-meta-schema` tests. The difference with
@@ -537,7 +575,8 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10
-    example-11 example-12))
+    example-11 example-12
+    example-13))
 
 (deftest test-malli-msg-type-schema-meta-schema
   (are [m] (not (m/explain
@@ -548,7 +587,8 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10
-    example-11 example-12))
+    example-11 example-12
+    example-13))
 
 (deftest test-invalid-malli-msg-type-schema-meta-schema
   (are [m] (m/explain
@@ -568,7 +608,8 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10
-    example-11 example-12))
+    example-11 example-12
+    example-13))
 
 (deftest test-invalid-malli-action-msg-type-schema-meta-schema
   (are [m] (m/explain
@@ -587,7 +628,26 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10
-    example-11 example-12))
+    example-11 example-12
+    example-13))
+
+(deftest test-valid-data-validation
+  (are [m] (core/validate-message-data
+            (:malli-schema m)
+            (:message-data m))
+    example-1 example-2
+    example-3 example-4
+    example-5 example-6
+    example-7 example-8
+    example-9 example-10
+    example-11 example-12
+    example-13))
+
+(deftest test-invalid-data-validation
+  (are [m] (not (core/validate-message-data
+                 (:malli-schema m)
+                 (:message-data m)))
+    invalid-example-9))
 
 (deftest test-data-model-metadata
   (are [m] (= (->> (:data-model-metadata m)
@@ -599,7 +659,8 @@
     example-5 example-6
     example-7 example-8
     example-9 example-10
-    example-11 example-12))
+    example-11 example-12
+    example-13))
 
 (deftest calculate-new-data-model-metadata-test
   (let [old-schema [:biotz.message-schema/message
