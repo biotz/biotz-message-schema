@@ -108,9 +108,9 @@
   {:message-data
    {"firmware" {"version" "1.0"}
     "temperatures" [{"timestamp" "2023-02-23T15:42:27Z" "temperature" 10.0}
-                    {"timestamp" "2023-02-23T15:43:27Z" "temperature" 10.0}]
-    "humidity" [{"timestamp" "2023-02-23T15:42:27Z" "humidity" 10.0}
-                {"timestamp" "2023-02-23T15:44:27Z" "humidity" 10.0}]}
+                    {"timestamp" "2023-02-23t15:43:27z" "temperature" 10.0}]
+    "humidity" [{"timestamp" "2023-02-23T15:42:27z" "humidity" 10.0}
+                {"timestamp" "2023-02-23t15:44:27Z" "humidity" 10.0}]}
    :malli-schema
    [:biotz.message-schema/message
     [:biotz.message-schema/object
