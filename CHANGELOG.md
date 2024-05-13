@@ -5,6 +5,8 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.16] - 2024-05-13
+
 - Allow negative values in "Unix timestamp, as string" data type, for symmetry with "Unix timestamp, as integer" data type.
 - Unix timestamp RFC-3339 now allows lowercase "T" and "Z" characters, as suggested in https://www.rfc-editor.org/rfc/rfc3339#section-5.6
 - Enforce limits for Integer data types (including the text-based representation). The previous validation rules allowed those data types to accept values that didn't fit in a 32 bits integer.
