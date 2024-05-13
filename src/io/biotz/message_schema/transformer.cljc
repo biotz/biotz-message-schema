@@ -123,7 +123,7 @@
 (def base10-integer-as-string-decoder
   {:enter
    (fn [x]
-     #?(:clj (Long/parseLong x 10)
+     #?(:clj (Integer/parseInt x 10)
         :cljs (js/parseInt x 10)))})
 
 (def base10-decimal-as-string-decoder

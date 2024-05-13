@@ -558,6 +558,20 @@
     [:biotz.message-schema/integer
      {:record-name "invalid-integer"}]]})
 
+(def invalid-example-11
+  {:message-data (inc (long Integer/MAX_VALUE))
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/base10-integer-as-string
+     {:record-name "invalid-integer-as-string"}]]})
+
+(def invalid-example-12
+  {:message-data "abcdef1234"
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/base16-integer-as-string
+     {:record-name "invalid-integer-as-string"}]]})
+
 (defn- remove-leaf-nodes-properties
   "Convinience function to reuse the examples 1-12 with
   `action-msg-type-schema-meta-schema` tests. The difference with
@@ -655,7 +669,9 @@
                  (:malli-schema m)
                  (:message-data m)))
     invalid-example-9
-    invalid-example-10))
+    invalid-example-10
+    invalid-example-11
+    invalid-example-12))
 
 (deftest test-data-model-metadata
   (are [m] (= (->> (:data-model-metadata m)

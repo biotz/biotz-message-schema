@@ -146,8 +146,14 @@
      :biotz-canonical-type :integer
      :decode/biotz-canonicalization-transformer transformer/base10-integer-as-string-decoder
      :decode/biotz-value-transformer transformer/value-transformer}
-    :pred #(and (string? %)
-                (re-matches #"[+-]?[0-9]+" %))}))
+    :pred (fn [s]
+            (and (string? s)
+                 (re-matches #"[+-]?[0-9]+" s)
+                 (try
+                   (let [i #?(:clj (Integer/parseInt s 10)
+                              :cljs (js/parseInt s 10))]
+                     (<= integer-min-value i integer-max-value))
+                   (catch #?(:clj Throwable :cljs :default) _ nil))))}))
 
 (defn -base10-decimal-as-string
   []
@@ -171,7 +177,8 @@
      :decode/biotz-canonicalization-transformer transformer/base16-integer-as-string-decoder
      :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(and (string? %)
-                (re-matches #"(?:0x)?[0-9a-fA-F]+" %))}))
+                ;; 32 bit signed integers can have at most 8 hexadecimal digits.
+                (re-matches #"(?:0x)?[0-9a-fA-F]{1,8}" %))}))
 
 (defn- distinct-object-key-names?
   [object-schema]
