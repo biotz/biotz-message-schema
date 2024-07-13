@@ -5,6 +5,9 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+### Changed
+- Upgrade dependencies
+
 ## [0.1.16] - 2024-05-13
 
 - Allow negative values in "Unix timestamp, as string" data type, for symmetry with "Unix timestamp, as integer" data type.

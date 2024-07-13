@@ -14,7 +14,7 @@ RUN set -eux; \
     apt-get update && \
     apt-get install -y --no-install-recommends \
     ca-certificates=20230311 runit=2.1.2-54 \
-    curl=7.88.1-10+deb12u5 unzip=6.0-28 && \
+    curl=7.88.1-10+deb12u6 unzip=6.0-28 && \
     useradd --home-dir /home/hop --create-home --shell /bin/bash --user-group hop && \
     curl -sL -o "${BINARIES_INSTALL_PATH}/lein" "https://codeberg.org/leiningen/leiningen/raw/tag/${LEIN_VERSION}/bin/lein-pkg" && \
     chmod 755 "${BINARIES_INSTALL_PATH}/lein" && \

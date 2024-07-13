@@ -1,7 +1,7 @@
 (defproject io.biotz/message-schema "0.1.17-SNAPSHOT"
   :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [metosin/malli "0.14.0"]
+                 [metosin/malli "0.16.2"]
                  [com.widdindustries/cljc.java-time "0.1.21"]]
   :plugins [[s3-wagon-private "1.3.5"]]
   :deploy-repositories
