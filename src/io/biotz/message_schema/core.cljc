@@ -165,7 +165,71 @@
      :decode/biotz-canonicalization-transformer transformer/base10-decimal-as-string-decoder
      :decode/biotz-value-transformer transformer/value-transformer}
     :pred #(and (string? %)
-                (re-matches #"[+-]?([0-9]*\.[0-9]+|[0-9]+)" %))}))
+                ;; We support two alternatives (Clojure/Java support more formats, but
+                ;; we will restrict ourselves to these two):
+                ;;
+                ;;  1. A Java Decimal Integer Literal (longs and ints are valid floating point
+                ;;     values, even if they are not floating point literals).
+                ;;     https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.10.1
+                ;;  1. A Java Floating Point Literal (see
+                ;;     https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.10.2 )
+                (re-matches #"(?x)  # Use eXtended mode to allow whitespace and comments in patterns
+                              # Optional sign
+                              [-+]?
+                              ###
+                              # 1. Java Decimal Integer Literal
+                              ###
+                                (?:
+                                    # The maximum value that can be stored in a double precision
+                                    # floating point number is Double/MAX_VALUE), or
+                                    # 1.7976931348623157E308. That means that 2E308 (as a Decimal
+                                    # Integer) is larger that any possible double precision
+                                    # floating point number (irrespective of its sign). Thus any
+                                    # Decimal Integer Literal with more digits than those wont
+                                    # fit. But there won't be an error, as floating point values
+                                    # will signal that with the special `##Inf` or
+                                    # `-##Inf` (infinity, -infinity respectively) values.
+                                    [0-9]{1,309}
+                                )
+                              |
+                              ###
+                              # 2. Java Floating Point Literal
+                              ###
+                                (?:
+                                  # Two alternative groups.
+                                    # 1. Digits with dot and optional exponent part (2 alternatives)
+                                    (?:
+                                        # Digits with dot
+                                        (?:
+                                            # Digits . [Digits]; Limit the number of digits to avoid
+                                            # DoS attacks.  Double precision IEEE 754 floating point
+                                            # numbers use 53 bits for the decimal part. Thus the
+                                            # maximum precision is 15 to 17 decimal digits. Play on
+                                            # the safe side and allow up to 18, both for the
+                                            # integral part and the decimal part. Remember, the
+                                            # decimal part here is optional, hence the {0,18}
+                                            # limit. The integer part has the same limit as above.
+                                            [0-9]{1,309}\.[0-9]{0,18}
+                                          |
+                                            # . Digits; Limit the number of decimal digits to
+                                            # avoid DoS attacks.  Same considerations as above
+                                            \.[0-9]{1,18}
+                                        )
+                                        # Optional exponent part; Limit the number of digits to avoid DoS attacks.
+                                        # Double precision IEEE 754 floating point number cannot use a binary
+                                        # exponent larger than -1022/+1023. Which is 3 decimal digits. Play on
+                                        # the safe side and allow 4.
+                                        (?: [eE][+-]?[0-9]{1,4} )?
+                                    )
+                                  |
+                                    (?:
+                                        # 2. Digits without a dot and a with mandatory exponent part.
+                                        #    Limit the number of digits to avoid DoS attacks, with
+                                        #    same considerations as bove.
+                                        [0-9]{1,18}[eE][+-]?[0-9]{1,4}
+                                    )
+                                )"
+                            %))}))
 
 (defn -base16-integer-as-string
   []

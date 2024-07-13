@@ -12,7 +12,7 @@
 (def example-1
   {:message-data
    {"timestamp" "1677161696842"
-    "hum" 10.0
+    "hum" -10.0e00
     "temp" 20.0
     "on" true
     "onstr" "true"
@@ -52,7 +52,7 @@
         {:record-name "onint"}]]]]]
    :data
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
-     "humidity" 20.0
+     "humidity" -20.0
      "temperature" 21.5
      "on" true
      "onstr" true
@@ -107,7 +107,7 @@
 (def example-3
   {:message-data
    {"firmware" {"version" "1.0"}
-    "temperatures" [{"timestamp" "2023-02-23T15:42:27Z" "temperature" 10.0}
+    "temperatures" [{"timestamp" "2023-02-23T15:42:27Z" "temperature" -10.0}
                     {"timestamp" "2023-02-23t15:43:27z" "temperature" 10.0}]
     "humidity" [{"timestamp" "2023-02-23T15:42:27z" "humidity" 10.0}
                 {"timestamp" "2023-02-23t15:44:27Z" "humidity" 10.0}]}
@@ -140,7 +140,7 @@
          [:biotz.message-schema/decimal
           {:record-name "humidity"}]]]]]]]
    :data
-   [{"timestamp" (jt.instant/parse "2023-02-23T15:42:27Z") "temperature" 10.0 "humidity" 10.0 "firmware_version" "1.0"}
+   [{"timestamp" (jt.instant/parse "2023-02-23T15:42:27Z") "temperature" -10.0 "humidity" 10.0 "firmware_version" "1.0"}
     {"timestamp" (jt.instant/parse "2023-02-23T15:43:27Z") "temperature" 10.0 "firmware_version" "1.0"}
     {"timestamp" (jt.instant/parse "2023-02-23T15:44:27Z") "humidity" 10.0 "firmware_version" "1.0"}]
    :data-model-metadata
@@ -152,7 +152,7 @@
 (def example-4
   {:message-data
    {"timestamp" 1677161696842
-    "temperature" {"inner" "10.0" "outer" "12"}
+    "temperature" {"inner" "10.0" "outer" "12" "average" "123.e39" "other" "-1234"}
     "humidity" {"inner" "FF" "outer" "0xe"}}
    :malli-schema
    [:biotz.message-schema/message
@@ -169,7 +169,15 @@
           {:record-name "temperature_inner"}]]]
        ["outer"
         [:biotz.message-schema/base10-integer-as-string
-         {:record-name "temperature_outer"}]]]]
+         {:record-name "temperature_outer"}]]
+       ["average"
+        [:biotz.message-schema/nilable
+         [:biotz.message-schema/base10-decimal-as-string
+          {:record-name "temperature_average"}]]]
+       ["other"
+        [:biotz.message-schema/nilable
+         [:biotz.message-schema/base10-decimal-as-string
+          {:record-name "temperature_other"}]]]]]
      ["humidity"
       [:biotz.message-schema/object
        ["inner"
@@ -182,12 +190,16 @@
    [{"timestamp" (jt.instant/of-epoch-milli 1677161696842)
      "temperature_inner" 10.0
      "temperature_outer" 12
+     "temperature_average" 1.23E41
+     "temperature_other" -1234.0
      "humidity_inner" 255
      "humidity_outer" 14}]
    :data-model-metadata
    [{:name "timestamp" :type :timestamp}
     {:name "temperature_inner" :type :decimal}
     {:name "temperature_outer" :type :integer}
+    {:name "temperature_average" :type :decimal}
+    {:name "temperature_other" :type :decimal}
     {:name "humidity_inner" :type :integer}
     {:name "humidity_outer" :type :integer}]})
 
