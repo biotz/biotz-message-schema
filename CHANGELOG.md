@@ -5,6 +5,7 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.17] - 2024-07-13
 ### Changed
 - Upgrade dependencies
 - base10-decimal-as-string now allows the same kind of values that decimal allows (with certain length limits, to prevent DoS attacks)
