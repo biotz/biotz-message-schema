@@ -132,12 +132,16 @@
      #?(:clj (Double/parseDouble x)
         :cljs (js/parseFloat x)))})
 
+(defn- normalize-base16-string
+  [s]
+  (second (re-matches #"(?:0x)?([0-9a-fA-F]+)" s)))
+
 (def base16-integer-as-string-decoder
   {:enter
    (fn [x]
-     (let [hex (re-matches #"(?:0x)?([0-9a-fA-F]+)" x)]
-       #?(:clj (Long/parseLong (second hex) 16)
-          :cljs (js/parseInt (second hex) 16))))})
+     (let [hex (normalize-base16-string x)]
+       #?(:clj (.intValue ^Long (Long/parseLong hex 16))
+          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
 
 (def boolean-as-string-decoder
   {:enter

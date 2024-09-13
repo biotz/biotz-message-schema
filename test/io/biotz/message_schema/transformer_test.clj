@@ -26,6 +26,22 @@
       (is (true? (decoder -1)))
       (is (false? (decoder 0))))))
 
+(deftest base16-integer-as-string-decoder-test
+  (let [schema [:any
+                {:decode/test-transformer transformer/base16-integer-as-string-decoder}]
+        transformer (mt/transformer {:name :test-transformer})
+        decoder  (m/decoder schema transformer)]
+    (testing "Testing base16-integer-as-string-decoder"
+      (are [in out] (= out (decoder in) (decoder (str "0x" in)))
+        "0" 0
+        "7F" 127
+        "fF" 255
+        "ffff" 65535
+        "7fffffff" 2147483647
+        "80000000" -2147483648
+        "80000001" -2147483647
+        "ffffffff" -1))))
+
 (deftest scale+offset-value-transformer-test
   (testing "Testing scale+offset-value-transformar"
     (letfn [(transform-value [value transformations]

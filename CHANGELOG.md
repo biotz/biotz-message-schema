@@ -4,6 +4,7 @@ file. This change log follows the conventions of
 [keepachangelog.com](http://keepachangelog.com/).
 
 ## [UNRELEASED]
+- 'base16-integer-as-string' parser now interprets hexadecimal strings using the two's complement representation.
 
 ## [0.1.17] - 2024-07-13
 ### Changed
