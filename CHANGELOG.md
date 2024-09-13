@@ -4,6 +4,8 @@ file. This change log follows the conventions of
 [keepachangelog.com](http://keepachangelog.com/).
 
 ## [UNRELEASED]
+### Added
+- Implement base-16 byte/short/integer decoders for CLJS.
 
 ## [0.1.19] - 2024-09-13
 ### Fixed

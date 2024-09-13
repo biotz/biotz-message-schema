@@ -136,26 +136,59 @@
   [s]
   (second (re-matches #"(?:0x)?([0-9a-fA-F]+)" s)))
 
+(def ^:const byte-max-value
+  "2^7 - 1"
+  127)
+
+(def ^:const byte-offset-for-negatives
+  "2^8"
+  256)
+
 (def base16-byte-as-string-decoder
   {:enter
    (fn [x]
      (let [hex (normalize-base16-string x)]
        #?(:clj (.byteValue ^Short (Short/parseShort hex 16))
-          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
+          :cljs (let [x (js/parseInt hex 16)]
+                  (if (<= x byte-max-value)
+                    x
+                    (- x byte-offset-for-negatives))))))})
+
+(def ^:const short-max-value
+  "2^15 - 1"
+  32767)
+
+(def ^:const short-offset-for-negatives
+  "2^16"
+  (bit-shift-left 1 16))
 
 (def base16-short-as-string-decoder
   {:enter
    (fn [x]
      (let [hex (normalize-base16-string x)]
        #?(:clj (.shortValue ^Integer (Integer/parseInt hex 16))
-          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
+          :cljs (let [x (js/parseInt hex 16)]
+                  (if (<= x short-max-value)
+                    x
+                    (- x short-offset-for-negatives))))))})
+
+(def ^:const int-max-value
+  "2^31 - 1"
+  2147483647)
+
+(def ^:const int-offset-for-negatives
+  "2^32"
+  4294967296)
 
 (def base16-integer-as-string-decoder
   {:enter
    (fn [x]
      (let [hex (normalize-base16-string x)]
        #?(:clj (.intValue ^Long (Long/parseLong hex 16))
-          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
+          :cljs (let [x (js/parseInt hex 16)]
+                  (if (<= x int-max-value)
+                    x
+                    (- x int-offset-for-negatives))))))})
 
 (def boolean-as-string-decoder
   {:enter
