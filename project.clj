@@ -1,4 +1,4 @@
-(defproject io.biotz/message-schema "0.1.19"
+(defproject io.biotz/message-schema "0.1.20-SNAPSHOT"
   :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [metosin/malli "0.16.2"]
