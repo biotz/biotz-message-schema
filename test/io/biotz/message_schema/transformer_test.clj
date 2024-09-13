@@ -26,6 +26,34 @@
       (is (true? (decoder -1)))
       (is (false? (decoder 0))))))
 
+(deftest base16-byte-as-string-decoder-test
+  (let [schema [:any
+                {:decode/test-transformer transformer/base16-byte-as-string-decoder}]
+        transformer (mt/transformer {:name :test-transformer})
+        decoder  (m/decoder schema transformer)]
+    (testing "Testing base16-byte-as-string-decoder"
+      (are [in out] (= out (decoder in) (decoder (str "0x" in)))
+        "0" 0
+        "43" 67
+        "7F" 127
+        "80" -128
+        "fF" -1))))
+
+(deftest base16-short-as-string-decoder-test
+  (let [schema [:any
+                {:decode/test-transformer transformer/base16-short-as-string-decoder}]
+        transformer (mt/transformer {:name :test-transformer})
+        decoder  (m/decoder schema transformer)]
+    (testing "Testing base16-short-as-string-decoder"
+      (are [in out] (= out (decoder in) (decoder (str "0x" in)))
+        "0" 0
+        "7F" 127
+        "ff" 255
+        "7fff" 32767
+        "8000" -32768
+        "8001" -32767
+        "ffff" -1))))
+
 (deftest base16-integer-as-string-decoder-test
   (let [schema [:any
                 {:decode/test-transformer transformer/base16-integer-as-string-decoder}]

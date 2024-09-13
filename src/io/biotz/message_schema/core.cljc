@@ -231,10 +231,36 @@
                                 )"
                             %))}))
 
+(defn -base16-byte-as-string
+  []
+  (m/-simple-schema
+   {:type :base16-byte-as-integer
+    :type-properties
+    {:biotz-type :base16-byte-as-string
+     :biotz-canonical-type :integer
+     :decode/biotz-canonicalization-transformer transformer/base16-byte-as-string-decoder
+     :decode/biotz-value-transformer transformer/value-transformer}
+    :pred #(and (string? %)
+                ;; 8 bit signed integers can have at most 2 hexadecimal digits.
+                (re-matches #"(?:0x)?[0-9a-fA-F]{1,2}" %))}))
+
+(defn -base16-short-as-string
+  []
+  (m/-simple-schema
+   {:type :base16-short-as-string
+    :type-properties
+    {:biotz-type :base16-short-as-string
+     :biotz-canonical-type :integer
+     :decode/biotz-canonicalization-transformer transformer/base16-short-as-string-decoder
+     :decode/biotz-value-transformer transformer/value-transformer}
+    :pred #(and (string? %)
+                ;; 16 bit signed integers can have at most 4 hexadecimal digits.
+                (re-matches #"(?:0x)?[0-9a-fA-F]{1,4}" %))}))
+
 (defn -base16-integer-as-string
   []
   (m/-simple-schema
-   {:type :integer
+   {:type :base16-integer-as-string
     :type-properties
     {:biotz-type :base16-integer-as-string
      :biotz-canonical-type :integer
@@ -301,6 +327,8 @@
    :biotz.message-schema/boolean-as-integer (-boolean-as-integer-schema)
    :biotz.message-schema/base10-integer-as-string (-base10-integer-as-string)
    :biotz.message-schema/base10-decimal-as-string (-base10-decimal-as-string)
+   :biotz.message-schema/base16-byte-as-string (-base16-byte-as-string)
+   :biotz.message-schema/base16-short-as-string (-base16-short-as-string)
    :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema

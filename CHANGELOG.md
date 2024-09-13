@@ -5,6 +5,7 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 - 'base16-integer-as-string' parser now interprets hexadecimal strings using the two's complement representation.
+- Add 'base16-byte-as-string' and 'base16-short-as-string' schemas.
 
 ## [0.1.17] - 2024-07-13
 ### Changed

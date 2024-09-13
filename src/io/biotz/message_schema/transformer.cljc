@@ -136,6 +136,20 @@
   [s]
   (second (re-matches #"(?:0x)?([0-9a-fA-F]+)" s)))
 
+(def base16-byte-as-string-decoder
+  {:enter
+   (fn [x]
+     (let [hex (normalize-base16-string x)]
+       #?(:clj (.byteValue ^Short (Short/parseShort hex 16))
+          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
+
+(def base16-short-as-string-decoder
+  {:enter
+   (fn [x]
+     (let [hex (normalize-base16-string x)]
+       #?(:clj (.shortValue ^Integer (Integer/parseInt hex 16))
+          :cljs (throw (ex-info "Not implemented" {:reason :not-implemented :value hex})))))})
+
 (def base16-integer-as-string-decoder
   {:enter
    (fn [x]
