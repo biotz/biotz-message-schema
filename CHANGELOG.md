@@ -5,6 +5,11 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.19] - 2024-09-13
+### Fixed
+- Fix 'base10-decimal-as-string' regex throwing error in CLJS.
+- Fix 'base16-byte-as-string' and 'base16-short-as-string' missing in metaschema.
+
 ## [0.1.18] - 2024-09-13
 ### Changed
 - 'base16-integer-as-string' parser now interprets hexadecimal strings using the two's complement representation.
