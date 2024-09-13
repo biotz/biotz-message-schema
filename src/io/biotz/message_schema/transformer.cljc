@@ -160,7 +160,7 @@
 
 (def ^:const short-offset-for-negatives
   "2^16"
-  (bit-shift-left 1 16))
+  65536)
 
 (def base16-short-as-string-decoder
   {:enter
