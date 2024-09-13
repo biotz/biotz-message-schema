@@ -493,6 +493,14 @@
                            [:tuple
                             [:any]
                             [:ref ::number-properties]]]
+                          [:biotz.message-schema/base16-byte-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::number-properties]]]
+                          [:biotz.message-schema/base16-short-as-string
+                           [:tuple
+                            [:any]
+                            [:ref ::number-properties]]]
                           [:biotz.message-schema/base16-integer-as-string
                            [:tuple
                             [:any]
