@@ -137,7 +137,7 @@
      :decode/biotz-canonicalization-transformer transformer/boolean-as-integer-decoder}
     :pred int?}))
 
-(defn -base10-integer-as-string
+(defn -base10-integer-as-string-schema
   []
   (m/-simple-schema
    {:type :integer
@@ -155,7 +155,7 @@
                      (<= integer-min-value i integer-max-value))
                    (catch #?(:clj Throwable :cljs :default) _ nil))))}))
 
-(defn -base10-decimal-as-string
+(defn -base10-decimal-as-string-schema
   []
   (m/-simple-schema
    {:type :decimal
@@ -236,7 +236,7 @@
                     :cljs #"[-+]?(?:[0-9]{1,309})|(?:(?:(?:[0-9]{1,309}\.[0-9]{0,18}|\.[0-9]{1,18})(?:[eE][+-]?[0-9]{1,4})?)|(?:[0-9]{1,18}[eE][+-]?[0-9]{1,4}))")
                  %))}))
 
-(defn -base16-byte-as-string
+(defn -base16-byte-as-string-schema
   []
   (m/-simple-schema
    {:type :base16-byte-as-integer
@@ -249,7 +249,7 @@
                 ;; 8 bit signed integers can have at most 2 hexadecimal digits.
                 (re-matches #"(?:0x)?[0-9a-fA-F]{1,2}" %))}))
 
-(defn -base16-short-as-string
+(defn -base16-short-as-string-schema
   []
   (m/-simple-schema
    {:type :base16-short-as-string
@@ -262,7 +262,7 @@
                 ;; 16 bit signed integers can have at most 4 hexadecimal digits.
                 (re-matches #"(?:0x)?[0-9a-fA-F]{1,4}" %))}))
 
-(defn -base16-integer-as-string
+(defn -base16-integer-as-string-schema
   []
   (m/-simple-schema
    {:type :base16-integer-as-string
@@ -341,11 +341,11 @@
    :biotz.message-schema/boolean (-boolean-schema)
    :biotz.message-schema/boolean-as-string (-boolean-as-string-schema)
    :biotz.message-schema/boolean-as-integer (-boolean-as-integer-schema)
-   :biotz.message-schema/base10-integer-as-string (-base10-integer-as-string)
-   :biotz.message-schema/base10-decimal-as-string (-base10-decimal-as-string)
-   :biotz.message-schema/base16-byte-as-string (-base16-byte-as-string)
-   :biotz.message-schema/base16-short-as-string (-base16-short-as-string)
-   :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string)
+   :biotz.message-schema/base10-integer-as-string (-base10-integer-as-string-schema)
+   :biotz.message-schema/base10-decimal-as-string (-base10-decimal-as-string-schema)
+   :biotz.message-schema/base16-byte-as-string (-base16-byte-as-string-schema)
+   :biotz.message-schema/base16-short-as-string (-base16-short-as-string-schema)
+   :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string-schema)
    :biotz.message-schema/to-discard (-to-discard-schema)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema
