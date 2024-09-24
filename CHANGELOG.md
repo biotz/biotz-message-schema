@@ -6,6 +6,7 @@ file. This change log follows the conventions of
 ## [UNRELEASED]
 ### Added
 - Implement base-16 byte/short/integer decoders for CLJS.
+- Add 'to-discard' schema (issue #6).
 
 ## [0.1.19] - 2024-09-13
 ### Fixed

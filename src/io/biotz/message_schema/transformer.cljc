@@ -41,6 +41,9 @@
   (reduce
    (fn [merge-types {:keys [path schema]}]
      (let [merge-type (cond
+                        (= :to-discard (m/type schema))
+                        :to-discard-ks
+
                         (mu/find-first schema (fn [s _ _]
                                                 (= :vector (m/type s))))
                         :coll-of-identical-item-ks
@@ -94,7 +97,8 @@
 (def message-decoder
   {:compile
    (fn [schema _]
-     (let [child (first (get-children schema))]
+     (let [child (first (get-children schema))
+           record-name (:record-name (m/properties (:schema child)))]
     ;;TODO refactor to perform operations based on schema
        {:leave
         (fn [x]
@@ -102,10 +106,20 @@
             (cond
               (map? x)
               [x]
+
               (sequential? x)
               x
+
+              record-name
+              [{record-name x}]
+
+              ;; NOTE when using the 'to-discard' type we can have
+              ;; messages with no data at all. But empty messages are
+              ;; still messages, so we want to use an empty map to
+              ;; represent them. The caller can decide if empty
+              ;; messages should be discarded or not.
               :else
-              [{(:record-name (m/properties (:schema child))) x}])))}))})
+              [{}])))}))})
 
 (def unix-timestamp-int-decoder
   {:enter jt.instant/of-epoch-milli})
@@ -200,6 +214,9 @@
   {:enter
    (fn [x]
      (not= 0 x))})
+
+(def to-discard-transformer
+  {:enter (constantly nil)})
 
 (defmulti transform-value
   (fn [_value transformer]

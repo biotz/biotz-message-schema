@@ -275,6 +275,14 @@
                 ;; 32 bit signed integers can have at most 8 hexadecimal digits.
                 (re-matches #"(?:0x)?[0-9a-fA-F]{1,8}" %))}))
 
+(defn- -to-discard-schema
+  []
+  (m/-simple-schema
+   {:type :to-discard
+    :type-properties
+    {:decode/biotz-canonicalization-transformer transformer/to-discard-transformer}
+    :pred any?}))
+
 (defn- distinct-object-key-names?
   [object-schema]
   (let [key-names (->> (rest object-schema)
@@ -292,7 +300,10 @@
                                 ;; repeated.
                                 (not (:record-timestamp %))))
                       (keep :record-name))]
-    (apply distinct? record-names)))
+    ;; NOTE when using the 'to-discard' type we can end with
+    ;; collections with no record-names at all.
+    (or (empty? record-names)
+        (apply distinct? record-names))))
 
 (defn- has-single-record-timestamp?
   [schema]
@@ -335,6 +346,7 @@
    :biotz.message-schema/base16-byte-as-string (-base16-byte-as-string)
    :biotz.message-schema/base16-short-as-string (-base16-short-as-string)
    :biotz.message-schema/base16-integer-as-string (-base16-integer-as-string)
+   :biotz.message-schema/to-discard (-to-discard-schema)
    ;; Collections
    :biotz.message-schema/object (m/-map-schema
                                  {:type-properties
@@ -530,7 +542,11 @@
                           [:biotz.message-schema/rfc-3339-timestamp
                            [:tuple
                             [:any]
-                            [:ref ::timestamp-properties]]]]}}
+                            [:ref ::timestamp-properties]]]
+                          ;; OTHER
+                          [:biotz.message-schema/to-discard
+                           [:tuple
+                            [:any]]]]}}
     [:and
      [:tuple
       [:= :biotz.message-schema/message]

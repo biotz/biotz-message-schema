@@ -457,6 +457,57 @@
    [{:name "timestamp" :type :timestamp}
     {:name "humidity" :type :decimal}]})
 
+(def example-14
+  {:message-data
+   {"one" 1
+    "two" [2 3 4 {}]
+    "three" {"four" 4
+             "five" {"six" 6
+                     "seven" 7
+                     "eight" []}}}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/object
+     ["one"
+      [:biotz.message-schema/integer
+       {:record-name "one"}]]
+     ["two"
+      [:biotz.message-schema/coll-of-unrelated-items
+       [:biotz.message-schema/integer
+        {:record-name "two_1"}]
+       [:biotz.message-schema/to-discard]
+       [:biotz.message-schema/integer
+        {:record-name "two_3"}]
+       [:biotz.message-schema/to-discard]]]
+     ["three"
+      [:biotz.message-schema/object
+       ["four"
+        [:biotz.message-schema/integer
+         {:record-name "four"}]]
+       ["five"
+        [:biotz.message-schema/to-discard]]]]]]
+   :data
+   [{"one" 1
+     "two_1" 2
+     "two_3" 4
+     "four" 4}]
+   :data-model-metadata
+   [{:name "one" :type :integer}
+    {:name "two_1" :type :integer}
+    {:name "two_3" :type :integer}
+    {:name "four" :type :integer}]})
+
+(def example-15
+  {:message-data
+   {"one" 1}
+   :malli-schema
+   [:biotz.message-schema/message
+    [:biotz.message-schema/to-discard]]
+   :data
+   [{}]
+   :data-model-metadata
+   []})
+
 (def invalid-example-1
   {:malli-schema
    [:biotz.message-schema/message
@@ -609,7 +660,8 @@
     example-7 example-8
     example-9 example-10
     example-11 example-12
-    example-13))
+    example-13 example-14
+    example-15))
 
 (deftest test-malli-msg-type-schema-meta-schema
   (are [m] (not (m/explain
@@ -621,7 +673,8 @@
     example-7 example-8
     example-9 example-10
     example-11 example-12
-    example-13))
+    example-13 example-14
+    example-15))
 
 (deftest test-invalid-malli-msg-type-schema-meta-schema
   (are [m] (m/explain
@@ -656,13 +709,14 @@
                 (:malli-schema m))
                (:message-data m)))
     example-1 example-2
-    ;; example-3 TODO decide how we want to support this
+    ;; ;; example-3 TODO decide how we want to support this
     example-4
     example-5 example-6
     example-7 example-8
     example-9 example-10
     example-11 example-12
-    example-13))
+    example-13 example-14
+    example-15))
 
 (deftest test-valid-data-validation
   (are [m] (core/validate-message-data
@@ -674,7 +728,7 @@
     example-7 example-8
     example-9 example-10
     example-11 example-12
-    example-13))
+    example-13 example-14))
 
 (deftest test-invalid-data-validation
   (are [m] (not (core/validate-message-data
@@ -696,7 +750,8 @@
     example-7 example-8
     example-9 example-10
     example-11 example-12
-    example-13))
+    example-13 example-14
+    example-15))
 
 (deftest calculate-new-data-model-metadata-test
   (let [old-schema [:biotz.message-schema/message
