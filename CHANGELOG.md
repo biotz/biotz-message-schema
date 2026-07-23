@@ -7,6 +7,7 @@ file. This change log follows the conventions of
 
 ## Changed
 - Internal implementation details only. Stopped using lazy sequences and used transducers where possible.
+- Upgraded dependencies
 
 ## [0.1.20] - 2024-09-24
 ### Added

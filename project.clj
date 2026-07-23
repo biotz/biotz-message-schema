@@ -1,8 +1,8 @@
 (defproject io.biotz/message-schema "0.1.21-SNAPSHOT"
   :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
-  :dependencies [[org.clojure/clojure "1.11.4"]
-                 [metosin/malli "0.17.0"]
-                 [com.widdindustries/cljc.java-time "0.1.21"]]
+  :dependencies [[org.clojure/clojure "1.12.5"]
+                 [metosin/malli "0.20.1"]
+                 [com.widdindustries/cljc.java-time "0.1.22"]]
   :test-paths ["test"]
   :profiles {:dev [:project/dev :profiles/dev]
              :repl {:prep-tasks ^:replace ["javac" "compile"]
@@ -20,7 +20,7 @@
                                       :debug [:progress :time]}
                            :resource-paths ["dev/resources"]
                            :source-paths ["dev/src"]
-                           :dependencies [[criterium "0.4.6"]]
+                           :dependencies [[criterium/criterium "0.4.6"]]
                            :plugins [[jonase/eastwood "1.4.3"]
                                      [dev.weavejester/lein-cljfmt "0.13.0"]]}}
   :test-selectors {:default (fn [m] (not (or (:integration m) (:regression m))))
