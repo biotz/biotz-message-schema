@@ -5,6 +5,7 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.21] - 2026-07-17
 ## Changed
 - Internal implementation details only. Stopped using lazy sequences and used transducers where possible.
 - Upgraded dependencies
