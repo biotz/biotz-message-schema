@@ -11,17 +11,18 @@
 
 (defn- get-children
   [schema]
-  (->> (mu/subschemas schema)
-       (filter #(= 1 (count (:path %))))
-       (map
-        (fn [{:keys [schema] :as children}]
-          (cond-> children
-            (= :maybe (m/type schema))
-            (update :schema (comp first m/children)))))))
+  (let [xf (comp
+            (filter #(= 1 (count (:path %))))
+            (map
+             (fn [{:keys [schema] :as children}]
+               (cond-> children
+                 (= :maybe (m/type schema))
+                 (update :schema (comp first m/children))))))]
+    (into [] xf (mu/subschemas schema))))
 
 (defn- find-record-names
   [schemas]
-  (map
+  (mapv
    (fn [schema]
      (:record-name (m/properties schema)))
    schemas))
@@ -30,11 +31,11 @@
   [schema children]
   (let [children-names (mu/keys schema)
         children-record-names (find-record-names (map :schema children))]
-    (->> (zipmap children-names children-record-names)
-         (remove #(or
-                   (nil? (second %))
-                   (= (first %) (second %))))
-         (into {}))))
+    (into {}
+          (remove #(or
+                    (nil? (second %))
+                    (= (first %) (second %))))
+          (zipmap children-names children-record-names))))
 
 (defn- build-object-merge-types
   [children]
@@ -74,9 +75,11 @@
                 object-ks-maps (keep renamed-map object-ks)]
             (if-not (seq coll-of-identical-item-ks)
               (into simple-type-ks-map object-ks-maps)
-              (->> (mapcat renamed-map coll-of-identical-item-ks)
-                   (mapv #(-> (into simple-type-ks-map %)
-                              (into object-ks-maps)))))))}))})
+              (let [xf (comp
+                        (mapcat renamed-map)
+                        (map #(-> (into simple-type-ks-map %)
+                                  (into object-ks-maps))))]
+                (into [] xf coll-of-identical-item-ks)))))}))})
 
 (def coll-of-unrelated-items-decoder
   {:compile
@@ -85,14 +88,14 @@
            children-record-names (find-record-names (map :schema children))]
        {:leave
         (fn [x]
-          (->> x
-               (map
-                (fn [record-name v]
-                  (if record-name
-                    {record-name v}
-                    v))
-                children-record-names)
-               (into {})))}))})
+          (into {}
+                (mapv
+                 (fn [record-name v]
+                   (if record-name
+                     {record-name v}
+                     v))
+                 children-record-names
+                 x)))}))})
 
 (def message-decoder
   {:compile

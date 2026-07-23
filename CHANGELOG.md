@@ -5,6 +5,9 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## Changed
+- Internal implementation details only. Stopped using lazy sequences and used transducers where possible.
+
 ## [0.1.20] - 2024-09-24
 ### Added
 - Implement base-16 byte/short/integer decoders for CLJS.

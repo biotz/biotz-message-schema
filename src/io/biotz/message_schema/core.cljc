@@ -286,20 +286,20 @@
 (defn- distinct-object-key-names?
   [object-schema]
   (let [key-names (->> (rest object-schema)
-                       (map first))]
+                       (mapv first))]
     (apply distinct? key-names)))
 
 (defn- distinct-record-names?
   [schema]
-  (let [record-names (->>
-                      (tree-seq vector? rest schema)
-                      (filter #(and
-                                (map? %)
-                                ;; NOTE all record-timestamps have the
-                                ;; same fixed name, and they can be
-                                ;; repeated.
-                                (not (:record-timestamp %))))
-                      (keep :record-name))]
+  (let [xf (comp
+            (filter #(and
+                      (map? %)
+                      ;; NOTE all record-timestamps have the
+                      ;; same fixed name, and they can be
+                      ;; repeated.
+                      (not (:record-timestamp %))))
+            (keep :record-name))
+        record-names (into [] xf (tree-seq vector? rest schema))]
     ;; NOTE when using the 'to-discard' type we can end with
     ;; collections with no record-names at all.
     (or (empty? record-names)
@@ -309,9 +309,9 @@
   [schema]
   (let [property-maps (->>
                        (tree-seq vector? rest schema)
-                       (filter map?))
+                       (filterv map?))
         record-timestamp-count (->> property-maps
-                                    (filter :record-timestamp)
+                                    (filterv :record-timestamp)
                                     (count))]
     (= 1 record-timestamp-count)))
 
@@ -319,12 +319,12 @@
   [schema]
   (let [nodes (tree-seq vector? rest schema)
         record-timestamp-count (->> nodes
-                                    (filter #(and (map? %) (:record-timestamp %)))
+                                    (filterv #(and (map? %) (:record-timestamp %)))
                                     (count))
         coll-of-identical-items-count (->> nodes
-                                           (filter #(and (vector? %)
-                                                         (= :biotz.message-schema/coll-of-identical-items
-                                                            (first %))))
+                                           (filterv #(and (vector? %)
+                                                          (= :biotz.message-schema/coll-of-identical-items
+                                                             (first %))))
                                            (count))]
     (if (> coll-of-identical-items-count 0)
       (= coll-of-identical-items-count record-timestamp-count)
