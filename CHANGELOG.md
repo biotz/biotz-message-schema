@@ -5,12 +5,16 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.23] - 2026-07-17
+### Added
+- Added license and other project metadata. Otherwise Clojars doesn't accept the deployment.
+
 ## [0.1.22] - 2026-07-17
-## Changed
+### Changed
 - Added config to deploy to Clojars
 
 ## [0.1.21] - 2026-07-17
-## Changed
+### Changed
 - Internal implementation details only. Stopped using lazy sequences and used transducers where possible.
 - Upgraded dependencies
 
