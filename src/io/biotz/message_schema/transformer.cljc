@@ -211,7 +211,7 @@
   {:enter
    (fn [x]
      #?(:clj (Boolean/parseBoolean x)
-        :cljs (boolean (= "true" (str/lower-case x)))))})
+        :cljs (= "true" (str/lower-case x))))})
 
 (def boolean-as-integer-decoder
   {:enter
