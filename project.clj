@@ -1,5 +1,8 @@
 (defproject io.biotz/message-schema "0.1.23-SNAPSHOT"
-  :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
+  :url "https://github.com/biotz/biotz-message-schema"
+  :description "Biotz IoT Message schema (and meta-schema) validation and decoding library"
+  :license {:name "Mozilla Public Licence 2.0"
+            :url "https://www.mozilla.org/en-US/MPL/2.0/"}
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [metosin/malli "0.20.1"]
                  [com.widdindustries/cljc.java-time "0.1.22"]]
