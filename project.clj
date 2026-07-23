@@ -1,8 +1,16 @@
-(defproject io.biotz/message-schema "0.1.22-SNAPSHOT"
+(defproject io.biotz/message-schema "0.1.22"
   :url "https://bitbucket.org/magnet-coop/biotz-message-schema"
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [metosin/malli "0.20.1"]
                  [com.widdindustries/cljc.java-time "0.1.22"]]
+  :deploy-repositories [["snapshots" {:url "https://clojars.org/repo"
+                                      :username :env/CLOJARS_USERNAME
+                                      :password :env/CLOJARS_PASSWORD
+                                      :sign-releases false}]
+                        ["releases"  {:url "https://clojars.org/repo"
+                                      :username :env/CLOJARS_USERNAME
+                                      :password :env/CLOJARS_PASSWORD
+                                      :sign-releases false}]]
   :test-paths ["test"]
   :profiles {:dev [:project/dev :profiles/dev]
              :repl {:prep-tasks ^:replace ["javac" "compile"]

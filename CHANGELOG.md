@@ -5,6 +5,10 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [0.1.22] - 2026-07-17
+## Changed
+- Added config to deploy to Clojars
+
 ## [0.1.21] - 2026-07-17
 ## Changed
 - Internal implementation details only. Stopped using lazy sequences and used transducers where possible.
