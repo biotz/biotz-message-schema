@@ -5,6 +5,9 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+### Changed
+- Upgraded dependencies (especially Malli to fix a startup performance issue)
+
 ## [0.1.23] - 2026-07-17
 ### Added
 - Added license and other project metadata. Otherwise Clojars doesn't accept the deployment.
