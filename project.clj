@@ -4,7 +4,7 @@
   :license {:name "Mozilla Public Licence 2.0"
             :url "https://www.mozilla.org/en-US/MPL/2.0/"}
   :dependencies [[org.clojure/clojure "1.12.5"]
-                 [metosin/malli "0.20.1"]
+                 [metosin/malli "0.20.2"]
                  [com.widdindustries/cljc.java-time "0.1.22"]]
   :deploy-repositories [["snapshots" {:url "https://clojars.org/repo"
                                       :username :env/CLOJARS_USERNAME
