@@ -5,6 +5,7 @@ file. This change log follows the conventions of
 
 ## [UNRELEASED]
 
+## [1.0.0] - 2026-09-30
 ### Changed
 - Upgraded dependencies (especially Malli to fix a startup performance issue)
 

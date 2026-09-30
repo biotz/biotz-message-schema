@@ -1,4 +1,4 @@
-(defproject io.biotz/message-schema "0.1.24-SNAPSHOT"
+(defproject io.biotz/message-schema "1.0.0"
   :url "https://github.com/biotz/biotz-message-schema"
   :description "Biotz IoT Message schema (and meta-schema) validation and decoding library"
   :license {:name "Mozilla Public Licence 2.0"
